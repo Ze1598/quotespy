@@ -3,8 +3,23 @@ from random import choice
 from textwrap import wrap
 from typing import Tuple, List, Dict, Union, Optional
 import utils as g_utils
+import validation as g_validation
+from errors import MissingGraphicSettings
 from type_interfaces import GraphicInfo, GraphicSettings, DefaultFormats
 from os import path
+
+
+def settings_help():
+    print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
+    "font_family": string with the name of the font to use;
+    "font_size": size of the font used;
+    "size": two-item list with the width and height of the graphic;
+    "color_scheme": two-item list with the background and text colors of the graphic;
+    "wrap_limit": max number of characters to allow per line of text;
+    "margin_bottom": space to leave in between text lines;
+    Please note the colors must be passed as Hexadecimal values and the numerical values as integers.
+    All numerical values are used as pixels.
+    """)
 
 
 def __choose_graphic_settings(
@@ -14,17 +29,21 @@ def __choose_graphic_settings(
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
     """
-    # TODO: create custom error
-    if (graphic_settings == dict()) and (default_settings_format == DefaultFormats.CUSTOM.value):
-        raise NotImplementedError
-    elif (graphic_settings == dict()):
+    # Validate that either custom or default settings were passed
+    g_validation.validate_settings_existence()
+    
+    # If the custom settings are just an empty dict, use the default settings format specified
+    if (graphic_settings == dict()):
         settings_file = f"quotespy\graphics\default_settings\default_settings_{default_settings_format}.json"
         chosen_settings = g_utils.parse_json_settings(settings_file)
+
+    # Otherwise, use the custom settingss
     else:
         chosen_settings = graphic_settings
-    # TODO: validate settings, no matter if custom or default
-    # validate_g_settings(chosen_settings)
-    
+
+    # Validate the chosen settings, independent of it being custom or default settings
+    g_validation.validate_g_settings(chosen_settings)
+
     return chosen_settings
 
 
@@ -55,7 +74,11 @@ def create_img(
         File extension for the graphic (image).
     """
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
+
+    # Validate the graphic info
+    g_validation.validate_graphic_info(graphic_info)
 
     # Set up variables
     FNT = ImageFont.truetype(
@@ -130,7 +153,8 @@ def gen_graphics(
     # titles have their respective frequency in the name)
     titles_quotes_updated = g_utils.get_ready_text(file_name)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(graphic_settings,default_settings_format)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for quote in titles_quotes_updated:
@@ -139,14 +163,24 @@ def gen_graphics(
 
 
 if __name__ == "__main__":
+    settings_help()
     # Load lyrics from a txt file and create graphics
     lyrics_source = "lyrics.txt"
     # Load the settings from a JSON file
     lyrics_settings = g_utils.parse_json_settings(
         "quotespy\graphics\default_settings\default_settings_lyrics.json"
     )
+    lyrics_settings = {
+        "font_family": "Inkfree.ttf",
+        "font_size": 250,
+        "size": [2800, 2800],
+        "color_scheme": ["#000000", "#ffffff"],
+        "wrap_limit": 20,
+        "margin_bottom": 312.5
+    }
+    gen_graphics(lyrics_source, {})
     # gen_graphics(lyrics_source, lyrics_settings)
-    gen_graphics(lyrics_source, {}, default_settings_format="lyrics")
+    # gen_graphics(lyrics_source, {}, default_settings_format="lyrics")
 
     # Create a single graphic
     info = {
@@ -157,5 +191,5 @@ if __name__ == "__main__":
         "quotespy\graphics\default_settings\default_settings_quote.json")
     quotes_source = "quotes.json"
     # gen_graphics(quotes_source, quote_settings)
-    # gen_graphics(quotes_source, {}, default_settings_format="quote")
+    # gen_graphics(quotes_source, {}, default_settings_format="quote", save_dir="C:\\Users\\ze179\\Desktop")
     create_img(info, {}, default_settings_format="quote")
