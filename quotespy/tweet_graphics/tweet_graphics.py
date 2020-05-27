@@ -1,7 +1,9 @@
 from PIL import Image, ImageDraw, ImageFont
 from textwrap import wrap
+from typing import Optional
 from type_interfaces import TweetInfo, GraphicSettings, DefaultFormats
 import utils as tweet_utils
+from os import path
 
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
@@ -14,7 +16,8 @@ def __choose_graphic_settings(
     if (graphic_settings == dict()) and (default_settings_format == DefaultFormats.CUSTOM.value):
         raise NotImplementedError
     elif (graphic_settings == dict()):
-        chosen_settings = default_settings_format
+        settings_file = f"quotespy\\tweet_graphics\default_settings\{default_settings_format}_mode_settings.json"
+        chosen_settings = tweet_utils.parse_json_settings(settings_file)
     else:
         chosen_settings = graphic_settings
     # TODO: validate settings, no matter if custom or default
@@ -80,7 +83,8 @@ def __get_initial_coordinates(img_size, dimensions):
 def create_tweet(
     tweet_info, 
     graphic_settings, 
-    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
+    save_dir: Optional[str] = ""
 ) -> None:
     # TODO validate tweet_info (including missing optional information)
     # t_info = __validate_tweet_info(tweet_info)
@@ -92,9 +96,9 @@ def create_tweet(
     tweet_text = tweet_info["tweet_text"]
     user_pic = tweet_info["user_pic"]
    
-    font_family = graphic_settings["font_family"]
-    font_size_text = graphic_settings["font_size_text"]
-    font_size_header = graphic_settings["font_size_header"]
+    font_family = g_settings["font_family"]
+    font_size_text = g_settings["font_size_text"]
+    font_size_header = g_settings["font_size_header"]
     # Set up the fonts based on settings
     font_header = ImageFont.truetype(
         font_family, font_size_header, encoding="utf-8")
@@ -102,12 +106,12 @@ def create_tweet(
         font_family, font_size_text, encoding="utf-8")
    
     # Size of the graphic
-    img_size = graphic_settings["size"]
+    img_size = g_settings["size"]
     # Vertical margin in between lines
-    margin_bottom = graphic_settings["margin_bottom"]
-    background_color = graphic_settings["color_scheme"][0]
-    text_color = graphic_settings["color_scheme"][1]
-    chars_limit = graphic_settings["wrap_limit"]
+    margin_bottom = g_settings["margin_bottom"]
+    background_color = g_settings["color_scheme"][0]
+    text_color = g_settings["color_scheme"][1]
+    chars_limit = g_settings["wrap_limit"]
 
     # Dict with size of header and size of text
     content_dims = tweet_utils.calculate_content_dimensions(
@@ -133,6 +137,7 @@ def create_tweet(
         y += font_text.size + margin_bottom
 
     save_name = f"{tweet_info['tweet_name']}.png"
+    save_name = path.join(save_dir, save_name)
     img.save(save_name)
 
 
@@ -156,9 +161,4 @@ if __name__ == "__main__":
 
     g = tweet_utils.parse_json_settings(
         "quotespy\\tweet_graphics\default_settings\dark_mode_settings.json")
-    # g = tweet_utils.parse_json_settings(
-    #     "quotespy\\tweet_graphics\default_settings\light_mode_settings.json")
-    # g = tweet_utils.parse_json_settings(
-    #     "quotespy\\tweet_graphics\default_settings\\blue_mode_settings.json")
-    # tweet_utils.calculate_content_dimensions(t, g)
-    create_tweet(t, g)
+    create_tweet(t, {}, default_settings_format="light")

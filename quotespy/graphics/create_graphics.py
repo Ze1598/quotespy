@@ -4,8 +4,30 @@ from textwrap import wrap
 from typing import Tuple, List, Dict, Union, Optional
 import utils as g_utils
 from type_interfaces import GraphicInfo, GraphicSettings, DefaultFormats
+from os import path
 
-# TODO: pass `save_dir` to `graphic_info`
+
+def __choose_graphic_settings(
+    graphic_settings: GraphicSettings,
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
+) -> None:
+    """Based on the custom graphic settings and (lack of) default settings passed,
+    choose the settings to be used.
+    """
+    # TODO: create custom error
+    if (graphic_settings == dict()) and (default_settings_format == DefaultFormats.CUSTOM.value):
+        raise NotImplementedError
+    elif (graphic_settings == dict()):
+        settings_file = f"quotespy\graphics\default_settings\default_settings_{default_settings_format}.json"
+        chosen_settings = g_utils.parse_json_settings(settings_file)
+    else:
+        chosen_settings = graphic_settings
+    # TODO: validate settings, no matter if custom or default
+    # validate_g_settings(chosen_settings)
+    
+    return chosen_settings
+
+
 def create_img(
     graphic_info: GraphicInfo,
     graphic_settings: GraphicSettings,
@@ -32,23 +54,18 @@ def create_img(
     file_ext : str
         File extension for the graphic (image).
     """
-    # Load default graphic settings if specified
-    if (default_settings_format == DefaultFormats.LYRICS.value):
-        graphic_settings = g_utils.parse_json_settings(
-            "quotespy\graphics\default_settings\default_settings_lyrics.json")
-    elif (default_settings_format == DefaultFormats.QUOTE.value):
-        graphic_settings = g_utils.parse_json_settings(
-            "quotespy\graphics\default_settings\default_settings_quote.json")
+    # Use the graphic settings passed (either custom or default)
+    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
 
     # Set up variables
     FNT = ImageFont.truetype(
-        graphic_settings["font_family"],
-        graphic_settings["font_size"],
+        g_settings["font_family"],
+        g_settings["font_size"],
         encoding="utf-8"
     )
-    WIDTH, HEIGHT = graphic_settings["size"]
+    WIDTH, HEIGHT = g_settings["size"]
     # Break down the text into lines with a maximum of `wrap_limit` characters
-    text_wrapped = wrap(graphic_info["text"], graphic_settings["wrap_limit"])
+    text_wrapped = wrap(graphic_info["text"], g_settings["wrap_limit"])
 
     # Find the height and width needed to draw the text
     temp_img = Image.new("RGB", (0, 0))
@@ -71,7 +88,7 @@ def create_img(
     img = Image.new(
         "RGB",
         (WIDTH, HEIGHT),
-        color=graphic_settings["color_scheme"][0]
+        color=g_settings["color_scheme"][0]
     )
     # Create the drawing interface
     drawing_interface = ImageDraw.Draw(img)
@@ -87,21 +104,23 @@ def create_img(
             (x, y),
             line,
             font=FNT,
-            fill=graphic_settings["color_scheme"][1]
+            fill=g_settings["color_scheme"][1]
         )
 
         # Update the Y coordinate for the next line
-        y += graphic_settings["margin_bottom"]
+        y += g_settings["margin_bottom"]
 
     # Save the image
-    save_name = f"{save_dir}{graphic_info['title']}.png"
+    save_name = f"{graphic_info['title']}.png"
+    save_name = path.join(save_dir, save_name)
     img.save(save_name)
 
 
 def gen_graphics(
     file_name: str,
     graphic_settings: GraphicSettings,
-    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
+    save_dir: Optional[str] = ""
 ) -> None:
     """Load quotes from the specified TXT or JSON file and create a graphic for each one.
 
@@ -110,11 +129,13 @@ def gen_graphics(
     # Get the quotes from the source file (TXT or JSON) (make sure duplicate\
     # titles have their respective frequency in the name)
     titles_quotes_updated = g_utils.get_ready_text(file_name)
+    # Use the graphic settings passed (either custom or default)
+    g_settings = __choose_graphic_settings(graphic_settings,default_settings_format)
 
     # Create a graphic for each quote
     for quote in titles_quotes_updated:
         quote_dict = {"title": quote, "text": titles_quotes_updated[quote]}
-        create_img(quote_dict, graphic_settings, default_settings_format=default_settings_format)
+        create_img(quote_dict, g_settings, save_dir=save_dir)
 
 
 if __name__ == "__main__":
@@ -134,7 +155,7 @@ if __name__ == "__main__":
     }
     quote_settings = g_utils.parse_json_settings(
         "quotespy\graphics\default_settings\default_settings_quote.json")
-    # create_img(info, quote_settings)
     quotes_source = "quotes.json"
     # gen_graphics(quotes_source, quote_settings)
-    gen_graphics(quotes_source, {}, default_settings_format="quote")
+    # gen_graphics(quotes_source, {}, default_settings_format="quote")
+    create_img(info, {}, default_settings_format="quote")

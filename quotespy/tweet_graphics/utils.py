@@ -4,7 +4,7 @@ from typing import Dict, Union, List
 import json
 
 
-def create_dummy_img_components(graphic_settings):
+def __create_dummy_img_components(graphic_settings):
     # Set up the fonts based on settings
     font_header = ImageFont.truetype(
         graphic_settings["font_family"],
@@ -23,7 +23,7 @@ def create_dummy_img_components(graphic_settings):
     return (font_header, font_text, dummy_img)
 
 
-def calculate_username_height(user_name, font, img, height_margin):
+def __calculate_username_height(user_name, font, img, height_margin):
     """Calculate the total height for the username, including vertical margins.
     """
     # Calculate the height needed for each line and sum all of them
@@ -35,7 +35,7 @@ def calculate_username_height(user_name, font, img, height_margin):
     return height_user_name
 
 
-def calculate_header_height(tweet_info, graphic_settings, font, img):
+def __calculate_header_height(tweet_info, graphic_settings, font, img):
     """Calculate the header height (username, user tag plus, optionally, profile picture).
     """
     user_pic = tweet_info["user_pic"]
@@ -54,14 +54,14 @@ def calculate_header_height(tweet_info, graphic_settings, font, img):
     if (len(user_name) == 1):
         height_header = height_header = (profile_pic_size[1] * 0.1) + height_margin
     else:
-        height_header = calculate_username_height(user_name, font, img, height_margin)\
+        height_header = __calculate_username_height(user_name, font, img, height_margin)\
             + img.textsize(tweet_info["user_tag"], font=font)[1]\
             + height_margin
     
     return height_header
 
 
-def calculate_text_height(tweet_info, graphic_settings, font, img):
+def __calculate_text_height(tweet_info, graphic_settings, font, img):
     """Calculate the height needed to draw the tweet text.
     """
     text_wrapped = wrap(tweet_info["tweet_text"],
@@ -74,7 +74,7 @@ def calculate_text_height(tweet_info, graphic_settings, font, img):
     return height_text
 
 
-def calculate_text_width(tweet_info, graphic_settings, font, img):
+def __calculate_text_width(tweet_info, graphic_settings, font, img):
     """Calculate the width of the tweet content.
 
     The width is given as the width of the largest tweet text line.
@@ -92,7 +92,7 @@ def calculate_text_width(tweet_info, graphic_settings, font, img):
     return width_text
 
 
-def calculate_username_width(user_name, user_pic, font, img):
+def __calculate_username_width(user_name, user_pic, font, img):
     """Calculate the width of the username.
 
     The width is given as the width of the largest username line (in case it is broken up into multiple lines).
@@ -140,21 +140,21 @@ def calculate_content_dimensions(tweet_info, graphic_settings):
     """
     # Set up dummy image elements for calculations: the fonts\
     # and an image in which to draw for measures
-    font_header, font_text, dummy_img = create_dummy_img_components(
+    font_header, font_text, dummy_img = __create_dummy_img_components(
         graphic_settings)
 
     # Calculate the width needed for the tweet text
-    width_text = calculate_text_width(
+    width_text = __calculate_text_width(
         tweet_info, graphic_settings, font_text, dummy_img)
     # Calculate the width needed for the username
-    width_username = calculate_username_width(
+    width_username = __calculate_username_width(
         tweet_info["user_name"], tweet_info["user_pic"], font_header, dummy_img)
 
     # Calculate the height needed for the header
-    height_header = calculate_header_height(
+    height_header = __calculate_header_height(
         tweet_info, graphic_settings, font_header, dummy_img)
     # Calculate the height needed for the tweet text
-    height_text = calculate_text_height(
+    height_text = __calculate_text_height(
         tweet_info, graphic_settings, font_text, dummy_img)
 
     # Agreggate the header and text heights in a single dictionary
