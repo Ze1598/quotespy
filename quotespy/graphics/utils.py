@@ -5,7 +5,6 @@ from typing import Tuple, List, Dict, Union
 import json
 import re
 
-
 def __load_quotes_txt(
     file_name: str
 ) -> List[List[str]]:
@@ -21,7 +20,7 @@ def __load_quotes_txt(
     quote
     """
     # Load the source file contents as a single string
-    with open(file_name, "r") as source_file:
+    with open(file_name, "r", encoding="utf-8") as source_file:
         contents = "".join(source_file.readlines())
 
     # Get all the titles
@@ -44,9 +43,9 @@ def __load_text_json(
     Load quotes from a JSON file, i.e., load a JSON object that maps
     titles to quotes.
     """
-    with open(file_path, "r") as json_file:
-        json_songs = json.load(json_file)
-    return json_songs
+    with open(file_path, "r", encoding="utf-8") as json_file:
+        json_quotes = json.load(json_file)
+    return json_quotes
 
 
 def parse_json_settings(
@@ -55,7 +54,7 @@ def parse_json_settings(
     """
     Load a JSON object of settings for the image to be drawn as a Python dictionary.
     """
-    with open(file_path, "r") as json_file:
+    with open(file_path, "r", encoding="utf-8") as json_file:
         json_settings = json.load(json_file)
     return json_settings
 
@@ -96,6 +95,7 @@ def __update_title_counts(
     return updated_quotes
 
 
+# TODO: validate
 def get_ready_text(
     file_name: str
 ) -> List[Tuple[str, str]]:
