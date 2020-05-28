@@ -5,6 +5,32 @@ from type_interfaces import TweetInfo, GraphicSettings, DefaultFormats
 import utils as tweet_utils
 from os import path
 
+
+def settings_help():
+    print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
+    "font_family": string with the name of the font to use;
+    "font_size_header": size of the font to be used for the header;
+    "font_size_text": size of the font to be used for the tweet text;
+    "size": two-item list with the width and height of the graphic;
+    "color_scheme": two-item list with the background and text colors of the graphic;
+    "wrap_limit": max number of characters to allow per line of text;
+    "margin_bottom": space to leave in between text lines;
+    Please note the colors must be passed as Hexadecimal values and the numerical values as integers.
+    All numerical values are used as pixels.
+    """)
+
+
+def info_help():
+    print("""The `graphic_info` dictionary must have two fields, both with string values:
+    "tweet_name": name of the tweet graphic;
+    "user_name": username of the tweet's creator;
+    "user_tag": user tag/handle of the tweet's creator;
+    "user_pic": profile picture of the tweet's creator (local files only);
+    "tweet_text": text of the tweet;
+    All fields should be passed with string values.
+    """)
+
+
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
@@ -12,7 +38,7 @@ def __choose_graphic_settings(
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
     """
-    # TODO: create custom error
+    # TODO: validate
     if (graphic_settings == dict()) and (default_settings_format == DefaultFormats.CUSTOM.value):
         raise NotImplementedError
     elif (graphic_settings == dict()):
@@ -20,9 +46,9 @@ def __choose_graphic_settings(
         chosen_settings = tweet_utils.parse_json_settings(settings_file)
     else:
         chosen_settings = graphic_settings
-    # TODO: validate settings, no matter if custom or default
+    # TODO: validate
     # validate_g_settings(chosen_settings)
-    
+
     return chosen_settings
 
 
@@ -79,23 +105,24 @@ def __get_initial_coordinates(img_size, dimensions):
 
     return (x, y)
 
-# TODO: pass `save_dir` to `tweet_info`
+
 def create_tweet(
-    tweet_info, 
-    graphic_settings, 
+    tweet_info,
+    graphic_settings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
-    # TODO validate tweet_info (including missing optional information)
+    # TODO: validate
     # t_info = __validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
 
     user_name = tweet_info["user_name"]
     user_tag = tweet_info["user_tag"]
     tweet_text = tweet_info["tweet_text"]
     user_pic = tweet_info["user_pic"]
-   
+
     font_family = g_settings["font_family"]
     font_size_text = g_settings["font_size_text"]
     font_size_header = g_settings["font_size_header"]
@@ -104,7 +131,7 @@ def create_tweet(
         font_family, font_size_header, encoding="utf-8")
     font_text = ImageFont.truetype(
         font_family, font_size_text, encoding="utf-8")
-   
+
     # Size of the graphic
     img_size = g_settings["size"]
     # Vertical margin in between lines
@@ -127,7 +154,7 @@ def create_tweet(
     # Draw the header text (and update the vertical coordinate to be where\
     # the header finishes)
     y = __draw_header(user_name, user_tag, user_pic, img_size, img,
-        draw, (x, y), margin_bottom, font_header, text_color)
+                      draw, (x, y), margin_bottom, font_header, text_color)
 
     # Split the tweet text into lines
     text_wrapped = wrap(tweet_text, chars_limit)
@@ -139,6 +166,28 @@ def create_tweet(
     save_name = f"{tweet_info['tweet_name']}.png"
     save_name = path.join(save_dir, save_name)
     img.save(save_name)
+
+
+def gen_tweets(
+    file_name: str,
+    graphic_settings: GraphicSettings,
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
+    save_dir: Optional[str] = ""
+) -> None:
+    """Load tweets from a JSON file and create a graphic for each one.
+
+    If `default_settings_format` is passed, `graphic_settings` must be an empty dictionary.
+    """
+    # Load the tweets from a JSON file as a list of tweet_info dictionaries
+    json_tweets = tweet_utils.get_ready_tweets(file_name)
+
+    # Use the graphic settings passed (either custom or default)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
+
+    # Create a graphic for each quote
+    for tweet in json_tweets:
+        create_tweet(tweet, g_settings, save_dir=save_dir)
 
 
 if __name__ == "__main__":
@@ -162,3 +211,5 @@ if __name__ == "__main__":
     g = tweet_utils.parse_json_settings(
         "quotespy\\tweet_graphics\default_settings\dark_mode_settings.json")
     create_tweet(t, {}, default_settings_format="light")
+
+    gen_tweets("tweets.json", {}, default_settings_format="dark")

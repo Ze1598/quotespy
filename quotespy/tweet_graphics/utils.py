@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from textwrap import wrap
 from typing import Dict, Union, List
+from type_interfaces import TweetInfo
 import json
 
 
@@ -52,12 +53,13 @@ def __calculate_header_height(tweet_info, graphic_settings, font, img):
     # If the username fits in a single line, the header height is given by the\
     # profile picture; else it is given by the username and user tag heights
     if (len(user_name) == 1):
-        height_header = height_header = (profile_pic_size[1] * 0.1) + height_margin
+        height_header = height_header = (
+            profile_pic_size[1] * 0.1) + height_margin
     else:
         height_header = __calculate_username_height(user_name, font, img, height_margin)\
             + img.textsize(tweet_info["user_tag"], font=font)[1]\
             + height_margin
-    
+
     return height_header
 
 
@@ -172,9 +174,16 @@ def parse_json_settings(
     """
     Load a JSON object of settings for the image to be drawn as a Python dictionary.
     """
-    with open(file_path, "r") as json_file:
+    with open(file_path, "r", encoding="utf-8") as json_file:
         json_settings = json.load(json_file)
     return json_settings
+
+
+def get_ready_tweets(file_name) -> List[TweetInfo]:
+    with open(file_name, "r", encoding="utf-8") as json_file:
+        json_tweets = json.load(json_file)
+
+    return json_tweets
 
 
 if __name__ == "__main__":
