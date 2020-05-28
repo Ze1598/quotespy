@@ -1,8 +1,8 @@
 from typing import Tuple, List, Dict, Union, Optional
 from PIL import ImageFont
-from errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicField, InvalidFormatOption
+from .errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicField, InvalidFormatOption
 from re import findall
-from type_interfaces import GraphicSettings, DefaultFormats, DefaultFormats
+from .type_interfaces import GraphicSettings, DefaultFormats
 
 # print(GraphicSettings.__annotations__)
 
@@ -119,23 +119,3 @@ def validate_graphic_info(g_info) -> None:
     text_error_msg = "The graphic info dictionary must have a \"text\" field with the quote/lyrics you want to be drawn, as a string."
     __validate_graphic_info_field(g_info, "text", text_error_msg)
 
-
-if __name__ == "__main__":
-    sample_settings: GraphicSettings = {
-        "font_family": "Inkfree.ttf",
-        "font_size": 200,
-        "size": [2800, 2800],
-        "color_scheme": ["#000000", "#ffffff"],
-        "wrap_limit": 20,
-        "margin_bottom": 312.5
-    }
-    validate_g_settings(sample_settings)
-
-    sample_info = {
-        "title": "crown_of_shit",
-        "text": "You don't get anything playing the part when it's insincere yet you canonize yourself while you wear this crown of shit"
-    }
-    validate_graphic_info(sample_info)
-
-    # validate_format_option("afadf")
-    validate_format_option("quote")

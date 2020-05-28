@@ -120,14 +120,3 @@ def get_ready_text(
         titles_quotes = __load_text_json(file_name)
         return titles_quotes
 
-
-if __name__ == "__main__":
-    """
-    # Title of the lyrics text files
-    lyrics_file = "lyrics.txt"
-    # Scrape the titles and lyrics for each graphic
-    titles, lyrics = load_lyrics(lyrics_file)
-
-    # Now get the frequencies for each song title
-    title_freqs = count_song_freqs(titles)
-    """

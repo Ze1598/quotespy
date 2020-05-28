@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from textwrap import wrap
 from typing import Dict, Union, List
-from type_interfaces import TweetInfo
+from .type_interfaces import TweetInfo
 import json
 
 
@@ -185,21 +185,3 @@ def get_ready_tweets(file_name) -> List[TweetInfo]:
 
     return json_tweets
 
-
-if __name__ == "__main__":
-    t = {
-        "tweet_name": "blah",
-        "user_name": "José Fernando Costa",
-        "user_tag": "@soulsinporto",
-        "user_pic": "",
-        "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
-    }
-    g = {
-        "font_family": "arial.ttf",
-        "font_size": 95,
-        "size": [2800, 2800],
-        "color_scheme": ["black", "white"],
-        "wrap_limit": 37,
-        "margin_bottom": 30
-    }
-    calculate_content_dimensions(t, g)
