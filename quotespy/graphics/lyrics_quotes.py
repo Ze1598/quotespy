@@ -22,6 +22,13 @@ def settings_help():
     """)
 
 
+def info_help():
+    print("""The `graphic_info` dictionary must have two fields, both with string values:
+    "title": the title of the graphic to be created;
+    "text": the text to be drawn in the graphic;
+    """)
+
+
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
@@ -30,8 +37,14 @@ def __choose_graphic_settings(
     choose the settings to be used.
     """
     # Validate that either custom or default settings were passed
-    g_validation.validate_settings_existence()
-    
+    g_validation.validate_settings_existence(
+        graphic_settings, default_settings_format)
+
+    # Validate and sanitize the default settings format chosen
+    if default_settings_format != "":
+        default_settings_format = g_validation.validate_format_option(
+            default_settings_format)
+
     # If the custom settings are just an empty dict, use the default settings format specified
     if (graphic_settings == dict()):
         settings_file = f"quotespy\graphics\default_settings\default_settings_{default_settings_format}.json"
@@ -163,7 +176,9 @@ def gen_graphics(
 
 
 if __name__ == "__main__":
-    settings_help()
+    # settings_help()
+    # info_help()
+
     # Load lyrics from a txt file and create graphics
     lyrics_source = "lyrics.txt"
     # Load the settings from a JSON file
@@ -178,9 +193,9 @@ if __name__ == "__main__":
         "wrap_limit": 20,
         "margin_bottom": 312.5
     }
-    gen_graphics(lyrics_source, {})
+    # gen_graphics(lyrics_source, {})
     # gen_graphics(lyrics_source, lyrics_settings)
-    # gen_graphics(lyrics_source, {}, default_settings_format="lyrics")
+    gen_graphics(lyrics_source, {}, default_settings_format="lyrics")
 
     # Create a single graphic
     info = {

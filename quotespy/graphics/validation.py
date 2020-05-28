@@ -1,11 +1,11 @@
 from typing import Tuple, List, Dict, Union, Optional
 from PIL import ImageFont
-from errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings
+from errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicField, InvalidFormatOption
 from re import findall
-from type_interfaces import GraphicSettings, DefaultFormats
+from type_interfaces import GraphicSettings, DefaultFormats, DefaultFormats
 
 # print(GraphicSettings.__annotations__)
-    
+
 
 def __validate_font_family(value, error_msg):
     try:
@@ -49,9 +49,21 @@ def __validate_float_fields(value, error_msg):
 
 
 def validate_settings_existence(g_settings, def_settings) -> None:
-    settings_not_received = (g_settings == dict()) and (def_settings == DefaultFormats.CUSTOM.value)
+    settings_not_received = (g_settings == dict()) and (
+        def_settings == DefaultFormats.CUSTOM.value)
     if settings_not_received:
         raise MissingGraphicSettings("You did not pass custom settings (`graphic_settings`) nor a default settings format (`default_settings_format`).\n\tYou can either specify your own settings in a dictionary or, if you don't want that, pass an empty dictionary and specify a default format: \"lyrics\" or \"quote\".\n\tYou can call the `settings_help` method for indications on the fields needed for custom settings.")
+
+
+def validate_format_option(format_option):
+    valid_options = [option.value for option in DefaultFormats]
+    format_option = format_option.lower()
+    if format_option in valid_options:
+        return format_option
+    else:
+        avail_options = [option for option in valid_options if option != ""]
+        error_msg = f"You chose an invalid default graphic settings format.\n\tPlease choose one of this: {avail_options}"
+        raise InvalidFormatOption(error_msg)
 
 
 def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
@@ -91,9 +103,22 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
     return validated_settings
 
 
-def validate_graphic_info (g_info) -> None:
-    pass
-    
+def __validate_graphic_info_field(g_info, field, error_msg) -> None:
+    try:
+        field = g_info[field]
+    except KeyError:
+        raise MissingGraphicField(error_msg)
+
+    if type(field) != str:
+        raise MissingGraphicField(error_msg)
+
+
+def validate_graphic_info(g_info) -> None:
+    title_error_msg = "The graphic info dictionary must have a \"title\" field with the title of the graphic as a string."
+    __validate_graphic_info_field(g_info, "title", title_error_msg)
+    text_error_msg = "The graphic info dictionary must have a \"text\" field with the quote/lyrics you want to be drawn, as a string."
+    __validate_graphic_info_field(g_info, "text", text_error_msg)
+
 
 if __name__ == "__main__":
     sample_settings: GraphicSettings = {
@@ -105,3 +130,12 @@ if __name__ == "__main__":
         "margin_bottom": 312.5
     }
     validate_g_settings(sample_settings)
+
+    sample_info = {
+        "title": "crown_of_shit",
+        "text": "You don't get anything playing the part when it's insincere yet you canonize yourself while you wear this crown of shit"
+    }
+    validate_graphic_info(sample_info)
+
+    # validate_format_option("afadf")
+    validate_format_option("quote")
