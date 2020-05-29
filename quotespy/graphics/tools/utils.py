@@ -4,6 +4,7 @@ from textwrap import wrap
 from typing import Tuple, List, Dict, Union
 import json
 import re
+from .validation import __validate_text_loaded
 
 def __load_quotes_txt(
     file_name: str
@@ -29,6 +30,8 @@ def __load_quotes_txt(
     # Get all the quotes
     pattern_quotes = r'^([^\[].*?[^\]])$'
     quotes = re.findall(pattern_quotes, contents, flags=re.MULTILINE)
+
+    __validate_text_loaded(titles, quotes)
 
     # Pair the titles with the respective quotes in two-item lists
     titles_quotes = list(zip(titles, quotes))

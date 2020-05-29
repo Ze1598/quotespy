@@ -4,7 +4,8 @@ from enum import Enum
 
 class GraphicSettings(TypedDict):
     font_family: str
-    font_size: int
+    font_size_header: int
+    font_size_text: int
     size: List[int]
     color_scheme: List[str]
     wrap_limit: int

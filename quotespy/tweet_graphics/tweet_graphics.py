@@ -4,7 +4,7 @@ from typing import Optional
 from os import path
 from .tools.type_interfaces import TweetInfo, GraphicSettings, DefaultFormats
 from .tools.utils import parse_json_settings, process_pic, get_ready_tweets, calculate_content_dimensions
-from .tools.validation import validate_settings_existence, validate_format_option
+from .tools.validation import validate_settings_existence, validate_format_option, validate_g_settings, validate_tweet_info
 from .tools.default_settings import blue_mode_settings, light_mode_settings, dark_mode_settings
 
 
@@ -67,7 +67,7 @@ def __choose_graphic_settings(
         chosen_settings = graphic_settings
 
     # Validate the chosen settings, independent of it being custom or default settings
-    # t_validation.validate_g_settings(chosen_settings)
+    validate_g_settings(chosen_settings)
 
     return chosen_settings
 
@@ -132,8 +132,7 @@ def create_tweet(
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
-    # TODO: validate
-    # t_info = __validate_tweet_info(tweet_info)
+    t_info = validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
         graphic_settings, default_settings_format)

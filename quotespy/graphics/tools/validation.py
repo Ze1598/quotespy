@@ -1,10 +1,35 @@
 from typing import Tuple, List, Dict, Union, Optional
 from PIL import ImageFont
-from .errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicField, InvalidFormatOption
 from re import findall
-from .type_interfaces import GraphicSettings, DefaultFormats
+from .errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicField, InvalidFormatOption, InvalidFieldLength, MissingDictKeys, MissingTitles, MissingQuotes
+from .type_interfaces import GraphicSettings, DefaultFormats, GraphicInfo
 
-# print(GraphicSettings.__annotations__)
+
+def __validate_dict_keys(dict_data: Union[GraphicInfo, GraphicSettings], typed_dict: Union[GraphicInfo, GraphicSettings], dict_name: str) -> None:
+    # Get the keys from the type interface
+    if (dict_name == "graphic_settings"):
+        keys = typed_dict.__annotations__.keys()
+    elif (dict_name == "tweet_info"):
+        keys = typed_dict.__annotations__.keys()
+
+    # Get the keys given by the user
+    provided_keys = dict_data.keys()
+    # Get a list of the keys not provided by the user
+    missing_keys = [key for key in keys if key not in provided_keys]
+
+    # If there are any missing keys, raise an error
+    if (missing_keys != list()):
+        error_msg = f"The `{dict_name}` dictionary must include the keys:\n\t{keys}.\n\tYou are missing {missing_keys}"
+        raise MissingDictKeys(error_msg)
+
+
+def __validate_text_loaded(titles: List[str], quotes: List[str]) -> None:
+    if (titles == list()):
+        error_msg = "Make sure your titles are wrapped in brackets."
+        raise MissingTitles(error_msg)
+    elif (quotes == list()):
+        error_msg = "Make sure your quotes are written in the line right after the title."
+        raise MissingQuotes(error_msg)
 
 
 def __validate_font_family(value, error_msg):
@@ -24,18 +49,22 @@ def __validate_integer_fields(value, error_msg):
     pass
 
 
-def __validate_size(value, error_msg):
-    width = __validate_integer_fields(value[0], error_msg)
-    height = __validate_integer_fields(value[1], error_msg)
+def __validate_size(value, error_msg_length, error_msg_type):
+    if len(value) != 2:
+        raise InvalidFieldLength(error_msg_length)
+    width = __validate_integer_fields(value[0], error_msg_type)
+    height = __validate_integer_fields(value[1], error_msg_type)
     return [width, height]
 
 
-def __validate_color_scheme(value, error_msg):
+def __validate_color_scheme(value, error_msg_size, error_msg_color_format):
+    if len(value) != 2:
+        raise InvalidFieldLength(error_msg_size)
     hex_color_pattern = r'^#(?:[0-9a-fA-F]{3}){1,2}$'
     background_color = findall(hex_color_pattern, value[0])
     text_color = findall(hex_color_pattern, value[1])
-    if (background_color == None) or (text_color == None):
-        raise InvalidColorFormat(error_msg)
+    if (background_color == list()) or (text_color == list()):
+        raise InvalidColorFormat(error_msg_color_format)
     else:
         return [background_color[0], text_color[0]]
 
@@ -67,6 +96,9 @@ def validate_format_option(format_option):
 
 
 def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
+    # Validate if the input dictionary has all the required fields
+    __validate_dict_keys(g_settings, GraphicSettings, "graphic_settings")
+
     font_family_error_msg = f"The font {g_settings['font_family']} was not in found in your machine.\n\tPlease note you can provide an absolute path to your font if needed."
     font_family_validated = __validate_font_family(
         g_settings["font_family"], font_family_error_msg)
@@ -75,13 +107,15 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
     font_size_validated = __validate_integer_fields(
         g_settings["font_size"], font_size_error_msg)
 
-    size_error_msg = "Please provide a list of numbers for the width and height of the graphic (preferably an integer)."
+    size_error_msg_type = "Please provide a list of numbers for the width and height of the graphic (preferably an integer)."
+    size_error_msg_length = "Please provide two measures for the graphic size: a first one for the width and a second for the height."
     size_validated = __validate_size(
-        [g_settings["size"][0], g_settings["size"][1]], size_error_msg)
+        g_settings["size"], size_error_msg_length, size_error_msg_type)
 
-    color_scheme_error_msg = "Please provide valid Hex color values for both the background and text colors."
+    color_scheme_error_msg_format = "Please provide valid Hex color values for both the background and text colors."
+    color_scheme_error_msg_length = "Please provide two colors for the color scheme: a first one for the background and a second for the text."
     color_scheme_validated = __validate_color_scheme(
-        g_settings["color_scheme"], color_scheme_error_msg)
+        g_settings["color_scheme"], color_scheme_error_msg_length, color_scheme_error_msg_format)
 
     wrap_limit_error_msg = "Please provide a number for the maximum number of characters to include in each line of the graphic text (preferably an integer)."
     wrap_limit_validated = __validate_integer_fields(
@@ -114,8 +148,10 @@ def __validate_graphic_info_field(g_info, field, error_msg) -> None:
 
 
 def validate_graphic_info(g_info) -> None:
+    # Validate if the input dictionary has all the required fields
+    __validate_dict_keys(g_info, GraphicInfo, "graphic_settings")
+
     title_error_msg = "The graphic info dictionary must have a \"title\" field with the title of the graphic as a string."
     __validate_graphic_info_field(g_info, "title", title_error_msg)
     text_error_msg = "The graphic info dictionary must have a \"text\" field with the quote/lyrics you want to be drawn, as a string."
     __validate_graphic_info_field(g_info, "text", text_error_msg)
-
