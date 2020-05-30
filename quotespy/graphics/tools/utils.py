@@ -1,11 +1,11 @@
-from PIL import Image, ImageDraw, ImageFont
-from random import choice
-from textwrap import wrap
-from typing import Tuple, List, Dict, Union
 import json
 import re
-from .validation import __validate_text_loaded
+from random import choice
+from textwrap import wrap
+from typing import Dict, List, Tuple, Union
+from PIL import Image, ImageDraw, ImageFont
 from .type_interfaces import GraphicInfo, GraphicSettings
+from .validation import __validate_text_loaded
 
 
 def __load_quotes_txt(
@@ -60,10 +60,8 @@ def __load_text_json(
     Dict[str, str]
         Dictionary that maps titles to the respective quote/lyrics.
     """
-    print(file_path)
     with open(file_path, "r", encoding="utf-8") as json_file:
         json_quotes = json.load(json_file)
-    print(json_quotes)
     return json_quotes
 
 

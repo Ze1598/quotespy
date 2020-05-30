@@ -1,13 +1,16 @@
-from PIL import Image, ImageDraw, ImageFont
+from os import path
 from random import choice
 from textwrap import wrap
-from typing import Tuple, List, Dict, Union, Optional
-from .tools.utils import parse_json_settings, get_ready_text
-from .tools.validation import validate_settings_existence, validate_format_option, validate_g_settings, validate_graphic_info
+from typing import Dict, List, Optional, Tuple, Union
+from PIL import Image, ImageDraw, ImageFont
+from .tools.default_settings import (default_settings_lyrics,
+                                     default_settings_quote)
 from .tools.errors import MissingGraphicSettings
-from .tools.type_interfaces import GraphicInfo, GraphicSettings, DefaultFormats
-from .tools.default_settings import default_settings_lyrics, default_settings_quote
-from os import path
+from .tools.type_interfaces import DefaultFormats, GraphicInfo, GraphicSettings
+from .tools.utils import get_ready_text, parse_json_settings
+from .tools.validation import (validate_format_option, validate_g_settings,
+                               validate_graphic_info,
+                               validate_settings_existence)
 
 
 def settings_help() -> None:
@@ -45,7 +48,7 @@ def __load_default_settings(default_settings_format: str) -> GraphicSettings:
     Returns
     -------
     GraphicSettings
-        A dictionary of graphic settings.
+        Loaded default graphic settings.
     """
     if default_settings_format == DefaultFormats.LYRICS.value:
         return default_settings_lyrics
@@ -63,14 +66,14 @@ def __choose_graphic_settings(
     Parameters
     ----------
     graphic_settings : GraphicSettings
-        The dictionary of custom graphic settings.
+        Dictionary of custom graphic settings.
     default_settings_format : DefaultFormats, optional
         Name of the default settings format to use, by default DefaultFormats.CUSTOM.value
 
     Returns
     -------
     GraphicSettings
-        The graphic settings to be used for the graphic creation.
+        Graphic settings to be used for the graphic creation.
     """
     # Validate that either custom or default settings were passed
     validate_settings_existence(
@@ -98,7 +101,7 @@ def __choose_graphic_settings(
 def create_graphic(
     graphic_info: GraphicInfo,
     graphic_settings: GraphicSettings,
-    default_file_patht: Optional[DefaultFormats] = DefaultFormats.CUSTOM.value,
+    default_settings_format: Optional[DefaultFormats] = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
     """Create a single graphic given the title, the text and the graphic settings.
@@ -205,7 +208,7 @@ def gen_graphics(
         Default graphic settings format to use, by default DefaultFormats.CUSTOM.value
     save_dir : Optional[str], optional
         Destination path of the created graphic, by default ""
-    """    
+    """
     # Get the quotes from the source file (TXT or JSON) (make sure duplicate\
     # titles have their respective frequency in the name)
     titles_quotes_updated = get_ready_text(file_name)

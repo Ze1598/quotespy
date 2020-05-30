@@ -1,13 +1,16 @@
-from typing import Tuple, List, Dict, Union, Optional
-from PIL import ImageFont
 from re import findall
-from .errors import FontNotFound, InvalidColorFormat, MissingGraphicSettings, MissingGraphicInfoField, InvalidFormatOption, InvalidFieldLength, MissingDictKeys, MissingTitles, MissingQuotes, MissingTitlesOrQuotes
-from .type_interfaces import GraphicSettings, DefaultFormats, GraphicInfo
+from typing import Dict, List, Optional, Tuple, Union
+from PIL import ImageFont
+from .errors import (FontNotFound, InvalidColorFormat, InvalidFieldLength,
+                     InvalidFormatOption, MissingDictKeys,
+                     MissingGraphicInfoField, MissingGraphicSettings,
+                     MissingQuotes, MissingTitles, MissingTitlesOrQuotes)
+from .type_interfaces import DefaultFormats, GraphicInfo, GraphicSettings
 
 
 def __validate_dict_keys(
-    dict_data: Union[GraphicInfo, GraphicSettings], 
-    typed_dict: Union[GraphicInfo, GraphicSettings], 
+    dict_data: Union[GraphicInfo, GraphicSettings],
+    typed_dict: Union[GraphicInfo, GraphicSettings],
     dict_name: str
 ) -> None:
     """Validate that a custom `graphic_settings` or `graphic_info` dictionary has all the required fields.
@@ -15,9 +18,9 @@ def __validate_dict_keys(
     Parameters
     ----------
     dict_data : Union[GraphicInfo, GraphicSettings]
-        The dictionary of graphic settings or information to be validated.
+        Dictionary of graphic settings or information to be validated.
     typed_dict : Union[GraphicInfo, GraphicSettings]
-        The TypedDict that sets the required fields.
+        TypedDict that sets the required fields.
     dict_name : str
         Name of the dictionary under validation.
 
@@ -44,7 +47,7 @@ def __validate_dict_keys(
 
 
 def __validate_text_loaded(
-    titles: List[str], 
+    titles: List[str],
     quotes: List[str]
 ) -> None:
     """Validate that titles and quotes have been loaded from the given .txt file and that there's an equal amount of both.
@@ -77,7 +80,7 @@ def __validate_text_loaded(
 
 
 def __validate_font_family(
-    value: str, 
+    value: str,
     error_msg: str
 ) -> str:
     """Validate that the user has specified a font available in their machine.
@@ -85,14 +88,14 @@ def __validate_font_family(
     Parameters
     ----------
     value : str
-        The name of the font.family loaded
+        Name of the font.family loaded
     error_msg : str
         Error message for an invalid font name.
 
     Returns
     -------
     str
-        The validated font name.
+        The validated font name (including the .ttf file extension).
 
     Raises
     ------
@@ -103,7 +106,7 @@ def __validate_font_family(
     font_data = value.split(".")
     if len(font_data) == 1:
         value += ".ttf"
-    
+
     # If the font can be loaded, it is valid; otherwise raise an exception
     try:
         dummy_font = ImageFont.truetype(value, 1, encoding="utf-8")
@@ -113,7 +116,7 @@ def __validate_font_family(
 
 
 def __validate_integer_fields(
-    value: int, 
+    value: int,
     error_msg: str
 ) -> int:
     """Validate integer values from a dictionary.
@@ -121,20 +124,20 @@ def __validate_integer_fields(
     Parameters
     ----------
     value : int
-        The value to be validated
+        Value to be validated.
     error_msg : str
         Error message for an invalid value.
 
     Returns
     -------
     int
-        The validated value
+        Validated value.
 
     Raises
     ------
     TypeError
         Raised when the value is not valid (namely, when it is data that cannot be cast to int).
-    """    
+    """
     try:
         int_field = int(value)
         return int_field
@@ -143,8 +146,8 @@ def __validate_integer_fields(
 
 
 def __validate_size(
-    value: List[int], 
-    error_msg_length: str, 
+    value: List[int],
+    error_msg_length: str,
     error_msg_type: str
 ) -> List[int]:
     """Validate the list that represents the size of the graphic (width and height).
@@ -152,7 +155,7 @@ def __validate_size(
     Parameters
     ----------
     value : List[int]
-        The list of integers (width and height).
+        List of integers (width and height).
     error_msg_length : str
         Error message to display for a list that has too many or too few values.
     error_msg_type : str
@@ -161,14 +164,14 @@ def __validate_size(
     Returns
     -------
     List[int]
-        The validated list.
+        Validated list.
 
     Raises
     ------
     InvalidFieldLength
         Raised when the list has more or less than two values.    
-    """ 
-    # Fist verify that the list has appropriate length   
+    """
+    # Fist verify that the list has appropriate length
     if len(value) != 2:
         raise InvalidFieldLength(error_msg_length)
 
@@ -180,7 +183,7 @@ def __validate_size(
 
 def __validate_color_scheme(
     value: List[str],
-    error_msg_size: str, 
+    error_msg_size: str,
     error_msg_color_format: str
 ) -> List[str]:
     """Validate the list that represents the graphic's color scheme (background and text colors in Hexadecimal format).
@@ -197,7 +200,7 @@ def __validate_color_scheme(
     Returns
     -------
     List[str]
-        The validated color scheme.
+        Validated color scheme.
 
     Raises
     ------
@@ -223,7 +226,7 @@ def __validate_color_scheme(
 
 
 def __validate_float_fields(
-    value: float, 
+    value: float,
     error_msg: str
 ) -> float:
     """Validate float values from a dictionary.
@@ -231,20 +234,20 @@ def __validate_float_fields(
     Parameters
     ----------
     value : float
-        The value to be validated.
+        Value to be validated.
     error_msg : str
         Error message for an invalid value.
 
     Returns
     -------
     float
-        The validated value.
+        Validated value.
 
     Raises
     ------
     TypeError
         Raised when the value is not valid (namely, when it is data that cannot be cast to float).
-    """    
+    """
     try:
         float_field = float(value)
         return float_field
@@ -253,7 +256,7 @@ def __validate_float_fields(
 
 
 def validate_settings_existence(
-    g_settings: GraphicSettings, 
+    g_settings: GraphicSettings,
     def_settings: str
 ) -> None:
     """Validate that there is either custom or default graphic settings to be used (i.e., either the user passed a dictionary of custom settings or an empty dictionary along with the specification of a default settings format).
@@ -261,15 +264,15 @@ def validate_settings_existence(
     Parameters
     ----------
     g_settings : GraphicSettings
-        The custom graphic settings.
+        Custom graphic settings.
     def_settings : str
-        The default settings option chosen.
+        Default settings option chosen.
 
     Raises
     ------
     MissingGraphicSettings
         Raised when the user passed an empty dictionary and chose custom settings for the default settings format.
-    """    
+    """
     # Check if an empty dictionary was passed as the custom graphic settings
     custom_settings_empty = g_settings == dict()
     # Check if no default settings format was chosen (i.e., the user wants custom settings)
@@ -291,18 +294,18 @@ def validate_format_option(
     Parameters
     ----------
     format_option : str
-        The default settings format chosen.
+        Default settings format chosen.
 
     Returns
     -------
     str
-        The validated settings format name.
+        Validated settings format name.
 
     Raises
     ------
     InvalidFormatOption
         Raised when the default settings format name does not exist.
-    """    
+    """
     valid_options = [option.value for option in DefaultFormats]
     format_option = format_option.lower()
     if format_option in valid_options:
@@ -321,13 +324,13 @@ def validate_g_settings(
     Parameters
     ----------
     g_settings : GraphicSettings
-        The dictionary of graphic settings.
+        Dictionary of graphic settings.
 
     Returns
     -------
     GraphicSettings
-        The validated dictionary.
-    """    
+        Validated dictionary.
+    """
     # Validate if the input dictionary has all the required fields
     __validate_dict_keys(g_settings, GraphicSettings, "graphic_settings")
 
@@ -370,8 +373,8 @@ def validate_g_settings(
 
 
 def __validate_graphic_info_field(
-    g_info: GraphicInfo, 
-    field: str, 
+    g_info: GraphicInfo,
+    field: str,
     error_msg: str
 ) -> None:
     """Validate one field of the graphic's information dictionary.
@@ -389,7 +392,7 @@ def __validate_graphic_info_field(
     ------
     MissingGraphicInfoField
         Raised if the field's value is invalid or the field does not exist.
-    """    
+    """
     try:
         field = g_info[field]
     except KeyError:
@@ -407,8 +410,8 @@ def validate_graphic_info(
     Parameters
     ----------
     g_info : GraphicInfo
-        The dictionary of graphic info.
-    """    
+        Dictionary of graphic info.
+    """
     # Validate if the input dictionary has all the required fields
     __validate_dict_keys(g_info, GraphicInfo, "graphic_settings")
 
