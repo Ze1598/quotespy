@@ -27,4 +27,3 @@ light_mode_settings = {
     "wrap_limit": 32,
     "margin_bottom": 30
 }
-

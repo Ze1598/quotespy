@@ -1,14 +1,20 @@
-from PIL import Image, ImageDraw, ImageFont
-from textwrap import wrap
-from typing import Optional
 from os import path
-from .tools.type_interfaces import TweetInfo, GraphicSettings, DefaultFormats
-from .tools.utils import parse_json_settings, process_pic, get_ready_tweets, calculate_content_dimensions
-from .tools.validation import validate_settings_existence, validate_format_option, validate_g_settings, validate_tweet_info
-from .tools.default_settings import blue_mode_settings, light_mode_settings, dark_mode_settings
+from textwrap import wrap
+from typing import Dict, List, Optional, Tuple
+from PIL import Image, ImageDraw, ImageFont
+from .tools.default_settings import (blue_mode_settings, dark_mode_settings,
+                                     light_mode_settings)
+from .tools.type_interfaces import DefaultFormats, GraphicSettings, TweetInfo
+from .tools.utils import (calculate_content_dimensions, get_ready_tweets,
+                          parse_json_settings, process_pic)
+from .tools.validation import (validate_format_option, validate_g_settings,
+                               validate_settings_existence,
+                               validate_tweet_info)
 
 
-def settings_help():
+def settings_help() -> None:
+    """Print help information on how to create the `graphic_settings` dictionary.
+    """
     print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
     "font_family": string with the name of the font to use;
     "font_size_header": size of the font to be used for the header;
@@ -22,7 +28,9 @@ def settings_help():
     """)
 
 
-def info_help():
+def info_help() -> None:
+    """Print help information on how to create the `tweet_info` dictionary.
+    """
     print("""The `graphic_info` dictionary must have two fields, both with string values:
     "tweet_name": name of the tweet graphic;
     "user_name": username of the tweet's creator;
@@ -33,7 +41,21 @@ def info_help():
     """)
 
 
-def __load_default_settings(default_settings_format) -> GraphicSettings:
+def __load_default_settings(
+    default_settings_format: str
+) -> GraphicSettings:
+    """Based on the option chosen, load default graphic settings.
+
+    Parameters
+    ----------
+    default_settings_format : str
+        Default graphic settings format chosen.
+
+    Returns
+    -------
+    GraphicSettings
+        Loaded default graphic settings.
+    """
     if default_settings_format == DefaultFormats.LIGHT.value:
         return light_mode_settings
     elif default_settings_format == DefaultFormats.BLUE.value:
@@ -45,9 +67,21 @@ def __load_default_settings(default_settings_format) -> GraphicSettings:
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
-) -> None:
+) -> GraphicSettings:
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
+
+    Parameters
+    ----------
+    graphic_settings : GraphicSettings
+        Custom graphic settings dictionary.
+    default_settings_format : DefaultFormats, optional
+        Default graphic settings format, by default DefaultFormats.CUSTOM.value
+
+    Returns
+    -------
+    GraphicSettings
+        A dictionary of graphic settings to be used.
     """
     # Validate that either custom or default settings were passed
     validate_settings_existence(
@@ -72,8 +106,47 @@ def __choose_graphic_settings(
     return chosen_settings
 
 
-def __draw_header(username, user_tag, user_pic, graphic_size, img, d_interface, coords, margin, font, color):
-    """Draw the graphic header (username, user tag and, if specified, profile picture).
+def __draw_header(
+    username: str,
+    user_tag: str,
+    user_pic: str,
+    graphic_size: List[int],
+    img: Image.Image,
+    d_interface: ImageDraw.ImageDraw,
+    coords: List[int],
+    margin: float,
+    font: ImageFont.FreeTypeFont,
+    color: str
+) -> int:
+    """Draw the graphic's header (username, user tag and, if specified, profile picture).
+
+    Parameters
+    ----------
+    username : str
+        Tweet's username.
+    user_tag : str
+        Tweet's user tag/handle.
+    user_pic : str
+        Path to user's profile picture.
+    graphic_size : List[int]
+        Dimensions of the graphic.
+    img : Image
+        PIL Image used to draw the graphic.
+    d_interface : ImageDraw
+        Drawing interface for the Image.
+    coords : List[int]
+        Coordinates at which to start drawing.
+    margin : float
+        Vertical margin between text lines.
+    font : ImageFont.FreeTypeFont
+        Font used for the graphic's header.
+    color : str
+        Text color.
+
+    Returns
+    -------
+    int
+        The current Y coordinate.
     """
     x = int(coords[0])
     y = int(coords[1])
@@ -110,8 +183,23 @@ def __draw_header(username, user_tag, user_pic, graphic_size, img, d_interface, 
     return y
 
 
-def __get_initial_coordinates(img_size, dimensions):
+def __get_initial_coordinates(
+    img_size: List[int],
+    dimensions: Dict[str, List[int]]
+) -> Tuple[int]:
     """Calculate the initial X and Y coordinates at which to start drawing.
+
+    Parameters
+    ----------
+    img_size : List[int]
+        Width and height of the graphic.
+    dimensions : Dict[str, List[int]]
+        Dictinary that contains the size of the header (without profile picture) and the tweet text.
+
+    Returns
+    -------
+    Tuple[int]
+        Initial coordinates to start drawing at.
     """
     # Get header and tweet text dimensions
     header_width, header_height = dimensions["header"]
@@ -127,21 +215,37 @@ def __get_initial_coordinates(img_size, dimensions):
 
 
 def create_tweet(
-    tweet_info,
-    graphic_settings,
+    tweet_info: TweetInfo,
+    graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
+    """Create a tweet graphic.
+
+    Parameters
+    ----------
+    tweet_info : TweetInfo
+        Dictionary with the necessary information about the tweet.
+    graphic_settings : GraphicSettings
+        Dictionary with the settings needed to draw the graphic.
+    default_settings_format : DefaultFormats, optional
+        Default graphic settings option chosen, by default DefaultFormats.CUSTOM.value
+    save_dir : Optional[str], optional
+        Directory in which to save the graphic., by default ""
+    """
+    # Validate the tweet info
     t_info = validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
         graphic_settings, default_settings_format)
 
+    # Get the tweet info received
     user_name = tweet_info["user_name"]
     user_tag = tweet_info["user_tag"]
     tweet_text = tweet_info["tweet_text"]
     user_pic = tweet_info["user_pic"]
 
+    # Get the graphic settings received
     font_family = g_settings["font_family"]
     font_size_text = g_settings["font_size_text"]
     font_size_header = g_settings["font_size_header"]
@@ -173,7 +277,7 @@ def create_tweet(
     # Draw the header text (and update the vertical coordinate to be where\
     # the header finishes)
     y = __draw_header(user_name, user_tag, user_pic, img_size, img,
-                      draw, (x, y), margin_bottom, font_header, text_color)
+                      draw, [x, y], margin_bottom, font_header, text_color)
 
     # Split the tweet text into lines
     text_wrapped = wrap(tweet_text, chars_limit)
@@ -188,17 +292,28 @@ def create_tweet(
 
 
 def gen_tweets(
-    file_name: str,
+    file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
-    """Load tweets from a JSON file and create a graphic for each one.
+    """Load tweets from a .json file and create a graphic for each one.
 
     If `default_settings_format` is passed, `graphic_settings` must be an empty dictionary.
+
+    Parameters
+    ----------
+    file_path : str
+        Path to the .json file with tweets.
+    graphic_settings : GraphicSettings
+        Dictionary of graphic settings.
+    default_settings_format : DefaultFormats, optional
+        Default graphic settings chosen, by default DefaultFormats.CUSTOM.value
+    save_dir : Optional[str], optional
+        Directory at which to save the graphic, by default ""
     """
     # Load the tweets from a JSON file as a list of tweet_info dictionaries
-    json_tweets = get_ready_tweets(file_name)
+    json_tweets = get_ready_tweets(file_path)
 
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
