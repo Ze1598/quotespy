@@ -10,7 +10,9 @@ from .tools.default_settings import default_settings_lyrics, default_settings_qu
 from os import path
 
 
-def settings_help():
+def settings_help() -> None:
+    """Print help information on how to create the `graphic_settings` dictionary.
+    """
     print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
     "font_family": string with the name of the font to use;
     "font_size": size of the font used;
@@ -23,14 +25,28 @@ def settings_help():
     """)
 
 
-def info_help():
+def info_help() -> None:
+    """Print help information on how to create the `graphic_info` dictionary.
+    """
     print("""The `graphic_info` dictionary must have two fields, both with string values:
     "title": the title of the graphic to be created;
     "text": the text to be drawn in the graphic;
     """)
 
 
-def __load_default_settings(default_settings_format) -> GraphicSettings:
+def __load_default_settings(default_settings_format: str) -> GraphicSettings:
+    """Load the default graphic settings depending on what is chosen.
+
+    Parameters
+    ----------
+    default_settings_format : str
+        Name of the default settings format.
+
+    Returns
+    -------
+    GraphicSettings
+        A dictionary of graphic settings.
+    """
     if default_settings_format == DefaultFormats.LYRICS.value:
         return default_settings_lyrics
     elif default_settings_format == DefaultFormats.QUOTE.value:
@@ -40,9 +56,21 @@ def __load_default_settings(default_settings_format) -> GraphicSettings:
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
-) -> None:
+) -> GraphicSettings:
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
+
+    Parameters
+    ----------
+    graphic_settings : GraphicSettings
+        The dictionary of custom graphic settings.
+    default_settings_format : DefaultFormats, optional
+        Name of the default settings format to use, by default DefaultFormats.CUSTOM.value
+
+    Returns
+    -------
+    GraphicSettings
+        The graphic settings to be used for the graphic creation.
     """
     # Validate that either custom or default settings were passed
     validate_settings_existence(
@@ -53,7 +81,7 @@ def __choose_graphic_settings(
         default_settings_format = validate_format_option(
             default_settings_format)
 
-    # If the custom settings are just an empty dict, use the default settings format specified
+    # If the custom settings are just an empty dict, load the default settings format specified
     if (graphic_settings == dict()):
         chosen_settings = __load_default_settings(default_settings_format)
 
@@ -70,7 +98,7 @@ def __choose_graphic_settings(
 def create_graphic(
     graphic_info: GraphicInfo,
     graphic_settings: GraphicSettings,
-    default_settings_format: Optional[DefaultFormats] = DefaultFormats.CUSTOM.value,
+    default_file_patht: Optional[DefaultFormats] = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
     """Create a single graphic given the title, the text and the graphic settings.
@@ -78,7 +106,7 @@ def create_graphic(
 
     Create a single graphic given a tuple of (title, text_to_draw), a dictionary of various settings for the graphic (font family, font size, size of the image, color scheme, max number of characters per line and vertical magin between lines) and the desired file extension for the final image.
 
-    If `default_settings_format` is passed, `graphic_settings` must be an empty dictionary.
+    If `default_settings_format` is passed, `graphic_settings` should be an empty dictionary.
 
     Parameters
     ----------
@@ -86,12 +114,10 @@ def create_graphic(
         Dictionary with the title and the text of the graphic.
     graphic_settings : GraphicSettings
         Dictionary with the settings for the graphic. This includes font_family, font_size, size, color_scheme, wrap_limit and margin_bottom.
-    default_settings_format : DefaultFormats
-        If "lyrics" or "quote" is passed, `graphic_settings` is ignored and the graphic uses the respective default settings; otherwise defaults to an empty string (`DefaultFormats.Custom.value`), i.e., it is ignored.
-    save_dir : str
-        Destination path of the created graphic.
-    file_ext : str
-        File extension for the graphic (image).
+    default_settings_format : Optional[DefaultFormats], optional
+        Default graphic settings format to use, by default DefaultFormats.CUSTOM.value
+    save_dir : Optional[str], optional
+        Destination path of the created graphic, by default ""
     """
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
@@ -165,10 +191,21 @@ def gen_graphics(
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
 ) -> None:
-    """Load quotes from the specified TXT or JSON file and create a graphic for each one.
+    """Load quotes from the specified .txt or .json file and create a graphic for each one.
 
     If `default_settings_format` is passed, `graphic_settings` must be an empty dictionary.
-    """
+
+    Parameters
+    ----------
+    file_name : str
+        Path to the .txt or .json file with lyrics/quotes.
+    graphic_settings : GraphicSettings
+        Custom settings for the graphics. 
+    default_settings_format : DefaultFormats, optional
+        Default graphic settings format to use, by default DefaultFormats.CUSTOM.value
+    save_dir : Optional[str], optional
+        Destination path of the created graphic, by default ""
+    """    
     # Get the quotes from the source file (TXT or JSON) (make sure duplicate\
     # titles have their respective frequency in the name)
     titles_quotes_updated = get_ready_text(file_name)
@@ -180,4 +217,3 @@ def gen_graphics(
     for quote in titles_quotes_updated:
         quote_dict = {"title": quote, "text": titles_quotes_updated[quote]}
         create_graphic(quote_dict, g_settings, save_dir=save_dir)
-
