@@ -3,6 +3,6 @@
 ## Python library to create quotes/lyrics graphics with PIL
 
 ## TODO
-* Unit tests
+* Update README with code examples
 * Review package structure
 * Finish package setup
