@@ -5,7 +5,7 @@ from .errors import (FontNotFound, InvalidColorFormat, InvalidFieldLength,
                      InvalidFormatOption, InvalidProfilePicturePath,
                      InvalidTweetName, InvalidTweetText, InvalidUsername,
                      InvalidUserTag, MissingGraphicField,
-                     MissingGraphicSettings)
+                     MissingGraphicSettings, MissingDictKeys)
 from .type_interfaces import DefaultFormats, GraphicSettings, TweetInfo
 
 
@@ -27,7 +27,7 @@ def __validate_dict_keys(
 
     Raises
     ------
-    MissingGraphicField
+    MissingDictKeys
         Raised when the passed dictionary is missing one or more required fields.
     """
     # Get the keys from the type interface
@@ -44,7 +44,7 @@ def __validate_dict_keys(
     # If there are any missing keys, raise an error
     if (missing_keys != list()):
         error_msg = f"The `{dict_name}` dictionary must include the keys:\n\t{keys}.\n\tYou are missing {missing_keys}"
-        raise MissingGraphicField(error_msg)
+        raise MissingDictKeys(error_msg)
 
 
 def __validate_font_family(
@@ -218,7 +218,7 @@ def __validate_float_fields(
     try:
         float_field = float(value)
         return float_field
-    except TypeError:
+    except ValueError:
         raise TypeError(error_msg)
 
 
@@ -458,8 +458,11 @@ def __validate_user_pic(
         Raised for an invalid profile picture path.
     """
     try:
-        pic = Image.open(user_pic_path, "r")
-        return user_pic_path
+        if (user_pic_path != ""):
+            pic = Image.open(user_pic_path, "r")
+            return user_pic_path
+        else:
+            return user_pic_path
     except:
         raise InvalidProfilePicturePath(error_msg)
 

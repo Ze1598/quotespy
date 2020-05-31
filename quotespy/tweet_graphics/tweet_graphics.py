@@ -12,35 +12,6 @@ from .tools.validation import (validate_format_option, validate_g_settings,
                                validate_tweet_info)
 
 
-def settings_help() -> None:
-    """Print help information on how to create the `graphic_settings` dictionary.
-    """
-    print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
-    "font_family": string with the name of the font to use;
-    "font_size_header": size of the font to be used for the header;
-    "font_size_text": size of the font to be used for the tweet text;
-    "size": two-item list with the width and height of the graphic;
-    "color_scheme": two-item list with the background and text colors of the graphic;
-    "wrap_limit": max number of characters to allow per line of text;
-    "margin_bottom": space to leave in between text lines;
-    Please note the colors must be passed as Hexadecimal values and the numerical values as integers.
-    All numerical values are used as pixels.
-    """)
-
-
-def info_help() -> None:
-    """Print help information on how to create the `tweet_info` dictionary.
-    """
-    print("""The `graphic_info` dictionary must have two fields, both with string values:
-    "tweet_name": name of the tweet graphic;
-    "user_name": username of the tweet's creator;
-    "user_tag": user tag/handle of the tweet's creator;
-    "user_pic": profile picture of the tweet's creator (local files only);
-    "tweet_text": text of the tweet;
-    All fields should be passed with string values.
-    """)
-
-
 def __load_default_settings(
     default_settings_format: str
 ) -> GraphicSettings:

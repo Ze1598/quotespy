@@ -1,3 +1,18 @@
+class MissingDictKeys(Exception):
+    """Error raised when a dictionary does not have all the required fields.
+    """
+
+    def __init__(self, msg: str):
+        """Initializes MissingDictKeys with an error message.
+
+        Parameters
+        ----------
+        msg : str
+            The error message.
+        """
+        self.msg = msg
+
+
 class MissingGraphicSettings(Exception):
     """Error raised when there is no `graphic_settings` dictionary available.
     """

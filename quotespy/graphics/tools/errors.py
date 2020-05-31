@@ -89,7 +89,7 @@ class InvalidFieldLength(Exception):
 
 
 class MissingDictKeys(Exception):
-    """Error raised when the `graphic_settings` dictionary does not have all the required fields.
+    """Error raised when a dictionary does not have all the required fields.
     """
 
     def __init__(self, msg: str):
