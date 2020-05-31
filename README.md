@@ -4,14 +4,13 @@
 
 It can be installed through pip using `pip install quotespy` (**not yet**).
 
----
-
 ## Usage
 
 ### Quotes/Lyrics Graphics
 
 Create a graphic (.png) for lyrics, with default setings, saved in the current directory:
-```
+
+```python
 import quotespy.graphics.graphics as g
 graphic_info = {
     "title": "strange_days", 
@@ -24,7 +23,8 @@ g.create_graphic(graphic_info, {}, default_settings_format="lyrics")
 I encourage you to also try out the "quote" `default_settings_format` option.
 
 Alternatively, you can specify custom graphic settings and omit default settings options (note custom settings are chosen over default settings if both are specified).
-```
+
+```python
 import quotespy.graphics.graphics as g
 graphic_info = {
     "title": "strange_days", 
@@ -50,7 +50,7 @@ Please note all fields/keys shown for `graphic_info` and for `custom_settings` i
 
 If you have a .txt or .json file with multiple lyrics/quotes, you can also load it and create individual graphics with a single function, just specify the path to the source file and the graphic settings (either custom or a default format).
 
-```
+```python
 import quotespy.graphics.graphics as g
 g.gen_graphics("samples\\lyrics.txt", {}, default_settings_format="lyrics", save_dir="some_path")
 ```
@@ -64,7 +64,8 @@ For more information on the text formatting required from these .txt and .json s
 Tweet graphics works largely the same as the `graphics` counterpart. The biggest difference is that it uses a different module, and the dictionaries require a couple of additional fields.
 
 Starting with the most basic usage:
-```
+
+```python
 import quotespy.tweet_graphics.tweet_graphics as t
 tweet_info = {
     "tweet_name": "mistakes",
@@ -80,7 +81,8 @@ Just like the other module has its own default settings formats, for tweets ther
 That "user_pic" key's value in the `tweet_info` dictionary can either be a path to a .png file, or it can be left as an empty string. In other words, having a profile picture in the graphic is optional, but the dicitonary must always have the key. Also, note that the picture is pre-processed by reducing its dimensions to 10% of the graphic's dimensions, with a circular crop.
 
 If you want to use custom graphic settings, you can use the following example for reference:
-```
+
+```python
 import quotespy.tweet_graphics.tweet_graphics as t
 tweet_info = {
     "tweet_name": "mistakes",
@@ -102,14 +104,15 @@ t.create_tweet(tweet_info, graphic_settings)
 ```
 
 And, just like for the `create_graphics` module, you can also bulk generate tweet graphics, but this time only from .json source files:
-```
+
+```python
 import quotespy.tweet_graphics.tweet_graphics as t
 t.gen_tweets("samples\\tweets.json", {}, default_settings_format="dark")
 ```
 
 Lastly, I'd like to you show some "advanced" usage of this `tweet_graphics` module (hopefully it serves as inspiration for the `graphics` module as well):
 
-```
+```python
 import quotespy.tweet_graphics.tweet_graphics as t
 import os
 SAVEDIR = "imgs"
