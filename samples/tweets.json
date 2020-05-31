@@ -1,0 +1,17 @@
+[
+    {
+        "tweet_name": "mistakes",
+        "user_name": "José Fernando Costa",
+        "user_tag": "@soulsinporto",
+        "user_pic": "",
+        "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
+    },
+
+    {
+        "tweet_name": "positives",
+        "user_name": "José Fernando Costa José Fernando Costa",
+        "user_tag": "@soulsinporto",
+        "user_pic": "user_photo.png",
+        "tweet_text": "There is merit in talking about the positive aspects of terrible situations. It helps those going through the experience to see a glimpse of light at the end of the tunnel and it may help others who go through the same experience in the future."
+    }
+]
