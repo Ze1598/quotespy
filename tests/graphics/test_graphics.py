@@ -4,21 +4,22 @@ import pytest
 from PIL import Image
 from pytest_mock import mocker
 
+import quotespy
 import quotespy.graphics.graphics as src
 import quotespy.graphics.tools.errors as errors
 from quotespy.graphics.tools.utils import get_ready_text
 
-from .test_data import (default_settings_lyrics, default_settings_quote,
-                        invalid_color_scheme_length,
-                        invalid_color_scheme_value, invalid_font_family,
-                        invalid_font_size, invalid_margin_bottom,
-                        invalid_size_length, invalid_size_value, invalid_text,
-                        invalid_title, invalid_wrap_limit,
-                        missing_color_scheme, missing_font_family,
-                        missing_font_size, missing_margin, missing_size,
-                        missing_text, missing_title, missing_wrap_limit,
-                        valid_custom_settings, valid_info, valid_info_list, read_data)
-import quotespy
+from .data_samples import (default_settings_lyrics, default_settings_quote,
+                           invalid_color_scheme_length,
+                           invalid_color_scheme_value, invalid_font_family,
+                           invalid_font_size, invalid_margin_bottom,
+                           invalid_size_length, invalid_size_value,
+                           invalid_text, invalid_title, invalid_wrap_limit,
+                           missing_color_scheme, missing_font_family,
+                           missing_font_size, missing_margin, missing_size,
+                           missing_text, missing_title, missing_wrap_limit,
+                           read_data, valid_custom_settings, valid_info,
+                           valid_info_list)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
