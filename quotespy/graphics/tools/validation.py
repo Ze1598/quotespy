@@ -251,7 +251,7 @@ def __validate_float_fields(
     try:
         float_field = float(value)
         return float_field
-    except TypeError:
+    except ValueError:
         raise TypeError(error_msg)
 
 

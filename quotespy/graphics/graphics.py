@@ -13,31 +13,9 @@ from .tools.validation import (validate_format_option, validate_g_settings,
                                validate_settings_existence)
 
 
-def settings_help() -> None:
-    """Print help information on how to create the `graphic_settings` dictionary.
-    """
-    print("""If you are interested in using custom graphic settings, please pass a dictionary with the following fields and data types to the `graphic_settings` argument:
-    "font_family": string with the name of the font to use;
-    "font_size": size of the font used;
-    "size": two-item list with the width and height of the graphic;
-    "color_scheme": two-item list with the background and text colors of the graphic;
-    "wrap_limit": max number of characters to allow per line of text;
-    "margin_bottom": space to leave in between text lines;
-    Please note the colors must be passed as Hexadecimal values and the numerical values as integers.
-    All numerical values are used as pixels.
-    """)
-
-
-def info_help() -> None:
-    """Print help information on how to create the `graphic_info` dictionary.
-    """
-    print("""The `graphic_info` dictionary must have two fields, both with string values:
-    "title": the title of the graphic to be created;
-    "text": the text to be drawn in the graphic;
-    """)
-
-
-def __load_default_settings(default_settings_format: str) -> GraphicSettings:
+def __load_default_settings(
+    default_settings_format: str
+) -> GraphicSettings:
     """Load the default graphic settings depending on what is chosen.
 
     Parameters
@@ -88,7 +66,7 @@ def __choose_graphic_settings(
     if (graphic_settings == dict()):
         chosen_settings = __load_default_settings(default_settings_format)
 
-    # Otherwise, use the custom settingss
+    # Otherwise, use the custom settings
     else:
         chosen_settings = graphic_settings
 
@@ -122,12 +100,12 @@ def create_graphic(
     save_dir : Optional[str], optional
         Destination path of the created graphic, by default ""
     """
+    # Validate the graphic info
+    validate_graphic_info(graphic_info)
+
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
         graphic_settings, default_settings_format)
-
-    # Validate the graphic info
-    validate_graphic_info(graphic_info)
 
     # Set up variables
     FNT = ImageFont.truetype(
@@ -189,7 +167,7 @@ def create_graphic(
 
 
 def gen_graphics(
-    file_name: str,
+    file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
     save_dir: Optional[str] = ""
@@ -200,7 +178,7 @@ def gen_graphics(
 
     Parameters
     ----------
-    file_name : str
+    file_path : str
         Path to the .txt or .json file with lyrics/quotes.
     graphic_settings : GraphicSettings
         Custom settings for the graphics. 
@@ -211,7 +189,7 @@ def gen_graphics(
     """
     # Get the quotes from the source file (TXT or JSON) (make sure duplicate\
     # titles have their respective frequency in the name)
-    titles_quotes_updated = get_ready_text(file_name)
+    titles_quotes_updated = get_ready_text(file_path)
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
         graphic_settings, default_settings_format)
