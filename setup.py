@@ -6,8 +6,6 @@ from setuptools import setup, find_packages, find_namespace_packages
 with open("README.md", "r") as f:
     long_description = f.read()
 
-    # install_requires=find_namespace_packages(include=["quotespy"]),
-
 setup(
     name="quotespy",
     version="1.0.0",
@@ -25,7 +23,7 @@ setup(
     python_requires=">=3.7",
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Operating System :: Microsoft :: Windows :: Windows 10"
     ],
     zip_safe=False
