@@ -10,7 +10,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="quotespy",
-    version="0.5",
+    version="1.0.0",
     description="Python library to create quotes/lyrics graphics with PIL.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,7 +18,11 @@ setup(
     author="Jose Costa",
     author_email="jose.fernando.costa.1998@gmail.com",
     packages=find_namespace_packages(include=["quotespy*"]),
-    python_requires=">=3.6",
+    install_requires=[
+        "pillow>=7.1.2",
+        "typing-extensions>=3.7.4.2"
+    ],
+    python_requires=">=3.7",
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 3 - Alpha",
