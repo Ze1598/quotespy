@@ -2,19 +2,27 @@ from os import path
 from textwrap import wrap
 from typing import Dict, List, Optional, Tuple
 from PIL import Image, ImageDraw, ImageFont
-from .tools.default_settings import (blue_mode_settings, dark_mode_settings,
-                                     light_mode_settings)
+from .tools.default_settings import (
+    blue_mode_settings,
+    dark_mode_settings,
+    light_mode_settings,
+)
 from .tools.type_interfaces import DefaultFormats, GraphicSettings, TweetInfo
-from .tools.utils import (calculate_content_dimensions, get_ready_tweets,
-                          parse_json_settings, process_pic)
-from .tools.validation import (validate_format_option, validate_g_settings,
-                               validate_settings_existence,
-                               validate_tweet_info)
+from .tools.utils import (
+    calculate_content_dimensions,
+    get_ready_tweets,
+    parse_json_settings,
+    process_pic,
+)
+from .tools.validation import (
+    validate_format_option,
+    validate_g_settings,
+    validate_settings_existence,
+    validate_tweet_info,
+)
 
 
-def __load_default_settings(
-    default_settings_format: str
-) -> GraphicSettings:
+def __load_default_settings(default_settings_format: str) -> GraphicSettings:
     """Based on the option chosen, load default graphic settings.
 
     Parameters
@@ -37,7 +45,7 @@ def __load_default_settings(
 
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
-    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
 ) -> GraphicSettings:
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
@@ -55,16 +63,14 @@ def __choose_graphic_settings(
         A dictionary of graphic settings to be used.
     """
     # Validate that either custom or default settings were passed
-    validate_settings_existence(
-        graphic_settings, default_settings_format)
+    validate_settings_existence(graphic_settings, default_settings_format)
 
     # Validate and sanitize the default settings format chosen
     if default_settings_format != "":
-        default_settings_format = validate_format_option(
-            default_settings_format)
+        default_settings_format = validate_format_option(default_settings_format)
 
     # If the custom settings are just an empty dict, use the default settings format specified
-    if (graphic_settings == dict()):
+    if graphic_settings == dict():
         chosen_settings = __load_default_settings(default_settings_format)
 
     # Otherwise, use the custom settingss
@@ -87,7 +93,7 @@ def __draw_header(
     coords: List[int],
     margin: float,
     font: ImageFont.FreeTypeFont,
-    color: str
+    color: str,
 ) -> int:
     """Draw the graphic's header (username, user tag and, if specified, profile picture).
 
@@ -155,8 +161,7 @@ def __draw_header(
 
 
 def __get_initial_coordinates(
-    img_size: List[int],
-    dimensions: Dict[str, List[int]]
+    img_size: List[int], dimensions: Dict[str, List[int]]
 ) -> Tuple[int]:
     """Calculate the initial X and Y coordinates at which to start drawing.
 
@@ -189,7 +194,7 @@ def create_tweet(
     tweet_info: TweetInfo,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
-    save_dir: Optional[str] = ""
+    save_dir: Optional[str] = "",
 ) -> None:
     """Create a tweet graphic.
 
@@ -207,8 +212,7 @@ def create_tweet(
     # Validate the tweet info
     t_info = validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
 
     # Get the tweet info received
     user_name = tweet_info["user_name"]
@@ -221,10 +225,8 @@ def create_tweet(
     font_size_text = g_settings["font_size_text"]
     font_size_header = g_settings["font_size_header"]
     # Set up the fonts based on settings
-    font_header = ImageFont.truetype(
-        font_family, font_size_header, encoding="utf-8")
-    font_text = ImageFont.truetype(
-        font_family, font_size_text, encoding="utf-8")
+    font_header = ImageFont.truetype(font_family, font_size_header, encoding="utf-8")
+    font_text = ImageFont.truetype(font_family, font_size_text, encoding="utf-8")
 
     # Size of the graphic
     img_size = g_settings["size"]
@@ -235,8 +237,7 @@ def create_tweet(
     chars_limit = g_settings["wrap_limit"]
 
     # Dict with size of header and size of text
-    content_dims = calculate_content_dimensions(
-        tweet_info, g_settings)
+    content_dims = calculate_content_dimensions(tweet_info, g_settings)
     # Calculate the inital drawing coordinates
     x, y = __get_initial_coordinates(img_size, content_dims)
 
@@ -247,8 +248,18 @@ def create_tweet(
 
     # Draw the header text (and update the vertical coordinate to be where\
     # the header finishes)
-    y = __draw_header(user_name, user_tag, user_pic, img_size, img,
-                      draw, [x, y], margin_bottom, font_header, text_color)
+    y = __draw_header(
+        user_name,
+        user_tag,
+        user_pic,
+        img_size,
+        img,
+        draw,
+        [x, y],
+        margin_bottom,
+        font_header,
+        text_color,
+    )
 
     # Split the tweet text into lines
     text_wrapped = wrap(tweet_text, chars_limit)
@@ -266,7 +277,7 @@ def gen_tweets(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
-    save_dir: Optional[str] = ""
+    save_dir: Optional[str] = "",
 ) -> None:
     """Load tweets from a .json file and create a graphic for each one.
 
@@ -287,8 +298,7 @@ def gen_tweets(
     json_tweets = get_ready_tweets(file_path)
 
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for tweet in json_tweets:

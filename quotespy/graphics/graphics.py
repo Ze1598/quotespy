@@ -3,19 +3,19 @@ from random import choice
 from textwrap import wrap
 from typing import Dict, List, Optional, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
-from .tools.default_settings import (default_settings_lyrics,
-                                     default_settings_quote)
+from .tools.default_settings import default_settings_lyrics, default_settings_quote
 from .tools.errors import MissingGraphicSettings
 from .tools.type_interfaces import DefaultFormats, GraphicInfo, GraphicSettings
 from .tools.utils import get_ready_text, parse_json_settings
-from .tools.validation import (validate_format_option, validate_g_settings,
-                               validate_graphic_info,
-                               validate_settings_existence)
+from .tools.validation import (
+    validate_format_option,
+    validate_g_settings,
+    validate_graphic_info,
+    validate_settings_existence,
+)
 
 
-def __load_default_settings(
-    default_settings_format: str
-) -> GraphicSettings:
+def __load_default_settings(default_settings_format: str) -> GraphicSettings:
     """Load the default graphic settings depending on what is chosen.
 
     Parameters
@@ -36,7 +36,7 @@ def __load_default_settings(
 
 def __choose_graphic_settings(
     graphic_settings: GraphicSettings,
-    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value
+    default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
 ) -> GraphicSettings:
     """Based on the custom graphic settings and (lack of) default settings passed,
     choose the settings to be used.
@@ -54,16 +54,14 @@ def __choose_graphic_settings(
         Graphic settings to be used for the graphic creation.
     """
     # Validate that either custom or default settings were passed
-    validate_settings_existence(
-        graphic_settings, default_settings_format)
+    validate_settings_existence(graphic_settings, default_settings_format)
 
     # Validate and sanitize the default settings format chosen
     if default_settings_format != "":
-        default_settings_format = validate_format_option(
-            default_settings_format)
+        default_settings_format = validate_format_option(default_settings_format)
 
     # If the custom settings are just an empty dict, load the default settings format specified
-    if (graphic_settings == dict()):
+    if graphic_settings == dict():
         chosen_settings = __load_default_settings(default_settings_format)
 
     # Otherwise, use the custom settings
@@ -80,7 +78,7 @@ def create_graphic(
     graphic_info: GraphicInfo,
     graphic_settings: GraphicSettings,
     default_settings_format: Optional[DefaultFormats] = DefaultFormats.CUSTOM.value,
-    save_dir: Optional[str] = ""
+    save_dir: Optional[str] = "",
 ) -> None:
     """Create a single graphic given the title, the text and the graphic settings.
     create_img(graphic_info, graphic_settings)
@@ -104,14 +102,11 @@ def create_graphic(
     validate_graphic_info(graphic_info)
 
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
 
     # Set up variables
     FNT = ImageFont.truetype(
-        g_settings["font_family"],
-        g_settings["font_size"],
-        encoding="utf-8"
+        g_settings["font_family"], g_settings["font_size"], encoding="utf-8"
     )
     WIDTH, HEIGHT = g_settings["size"]
     # Break down the text into lines with a maximum of `wrap_limit` characters
@@ -124,22 +119,17 @@ def create_graphic(
     # Height of each text line to be drawn
     line_heights = [
         temp_img.textsize(text_wrapped[i], font=FNT)[1]
-        for i in range(len(text_wrapped))]
+        for i in range(len(text_wrapped))
+    ]
     # Width of the longest line (hence the width of the text)
-    width_text = max([
-        temp_img.textsize(line, font=FNT)[0]
-        for line in text_wrapped])
+    width_text = max([temp_img.textsize(line, font=FNT)[0] for line in text_wrapped])
     # Total height needed to draw all lines
     height_text = sum(line_heights)
     # Set up the height at which to draw the next line (the first one right now)
     y = (HEIGHT - height_text) // 2
 
     # Create a new image
-    img = Image.new(
-        "RGB",
-        (WIDTH, HEIGHT),
-        color=g_settings["color_scheme"][0]
-    )
+    img = Image.new("RGB", (WIDTH, HEIGHT), color=g_settings["color_scheme"][0])
     # Create the drawing interface
     drawing_interface = ImageDraw.Draw(img)
 
@@ -151,10 +141,7 @@ def create_graphic(
 
         # Draw the line
         drawing_interface.text(
-            (x, y),
-            line,
-            font=FNT,
-            fill=g_settings["color_scheme"][1]
+            (x, y), line, font=FNT, fill=g_settings["color_scheme"][1]
         )
 
         # Update the Y coordinate for the next line
@@ -170,7 +157,7 @@ def gen_graphics(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
-    save_dir: Optional[str] = ""
+    save_dir: Optional[str] = "",
 ) -> None:
     """Load quotes from the specified .txt or .json file and create a graphic for each one.
 
@@ -191,8 +178,7 @@ def gen_graphics(
     # titles have their respective frequency in the name)
     titles_quotes_updated = get_ready_text(file_path)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for quote in titles_quotes_updated:

@@ -6,6 +6,7 @@ from typing_extensions import TypedDict
 class GraphicSettings(TypedDict):
     """TypedDict for the `graphic_settings` dictionary, that is, the dictionary that contains settings for the graphic creation.
     """
+
     font_family: str
     font_size_header: int
     font_size_text: int
@@ -15,9 +16,10 @@ class GraphicSettings(TypedDict):
     margin_bottom: float
 
 
-class TweetInfo (TypedDict):
+class TweetInfo(TypedDict):
     """TypedDict for the `tweet_info` dictionary, that is, the dictionary that contains the tweet's information: name, username, user tag/handle, profile picture and the actual text.
     """
+
     tweet_name: str
     user_name: str
     user_tag: str
@@ -28,6 +30,7 @@ class TweetInfo (TypedDict):
 class DefaultFormats(Enum):
     """Contains the default `graphic_settings` format options.
     """
+
     CUSTOM = ""
     LIGHT = "light"
     DARK = "dark"

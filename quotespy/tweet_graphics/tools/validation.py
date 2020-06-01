@@ -1,18 +1,27 @@
 from re import findall
 from typing import Dict, List, Optional, Tuple, Union
 from PIL import Image, ImageFont
-from .errors import (FontNotFound, InvalidColorFormat, InvalidFieldLength,
-                     InvalidFormatOption, InvalidProfilePicturePath,
-                     InvalidTweetName, InvalidTweetText, InvalidUsername,
-                     InvalidUserTag, MissingGraphicField,
-                     MissingGraphicSettings, MissingDictKeys)
+from .errors import (
+    FontNotFound,
+    InvalidColorFormat,
+    InvalidFieldLength,
+    InvalidFormatOption,
+    InvalidProfilePicturePath,
+    InvalidTweetName,
+    InvalidTweetText,
+    InvalidUsername,
+    InvalidUserTag,
+    MissingGraphicField,
+    MissingGraphicSettings,
+    MissingDictKeys,
+)
 from .type_interfaces import DefaultFormats, GraphicSettings, TweetInfo
 
 
 def __validate_dict_keys(
     dict_data: Union[TweetInfo, GraphicSettings],
     typed_dict: Union[TweetInfo, GraphicSettings],
-    dict_name: str
+    dict_name: str,
 ) -> None:
     """Given either a dictionary of graphic settings (`graphic_settings`) or of tweet information (`tweet_info`), validate that is has all the required fields.
 
@@ -31,9 +40,9 @@ def __validate_dict_keys(
         Raised when the passed dictionary is missing one or more required fields.
     """
     # Get the keys from the type interface
-    if (dict_name == "graphic_settings"):
+    if dict_name == "graphic_settings":
         keys = typed_dict.__annotations__.keys()
-    elif (dict_name == "tweet_info"):
+    elif dict_name == "tweet_info":
         keys = typed_dict.__annotations__.keys()
 
     # Get the keys given by the user
@@ -42,15 +51,12 @@ def __validate_dict_keys(
     missing_keys = [key for key in keys if key not in provided_keys]
 
     # If there are any missing keys, raise an error
-    if (missing_keys != list()):
+    if missing_keys != list():
         error_msg = f"The `{dict_name}` dictionary must include the keys:\n\t{keys}.\n\tYou are missing {missing_keys}"
         raise MissingDictKeys(error_msg)
 
 
-def __validate_font_family(
-    value: str,
-    error_msg: str
-) -> str:
+def __validate_font_family(value: str, error_msg: str) -> str:
     """Validate the font family chosen.
 
     Parameters
@@ -82,10 +88,7 @@ def __validate_font_family(
         raise FontNotFound(error_msg)
 
 
-def __validate_integer_fields(
-    value: int,
-    error_msg: str
-) -> int:
+def __validate_integer_fields(value: int, error_msg: str) -> int:
     """Validate integer values from a dictionary.
 
     Parameters
@@ -113,9 +116,7 @@ def __validate_integer_fields(
 
 
 def __validate_size(
-    value: List[int],
-    error_msg_length: str,
-    error_msg_type: str
+    value: List[int], error_msg_length: str, error_msg_type: str
 ) -> List[int]:
     """Validate the list that represents the size of the graphic (width and height).
 
@@ -149,9 +150,7 @@ def __validate_size(
 
 
 def __validate_color_scheme(
-    value: List[str],
-    error_msg_size: str,
-    error_msg_color_format: str
+    value: List[str], error_msg_size: str, error_msg_color_format: str
 ) -> List[str]:
     """Validate the list that represents the graphic's color scheme (background and text colors in Hexadecimal format).
 
@@ -181,7 +180,7 @@ def __validate_color_scheme(
         raise InvalidFieldLength(error_msg_size)
 
     # Use regex to verify the colors are written as valid Hexadecimal values
-    hex_color_pattern = r'^#(?:[0-9a-fA-F]{3}){1,2}$'
+    hex_color_pattern = r"^#(?:[0-9a-fA-F]{3}){1,2}$"
     background_color = findall(hex_color_pattern, value[0])
     text_color = findall(hex_color_pattern, value[1])
     # If the regex didn't match either the background or the text color, raise an exception
@@ -192,10 +191,7 @@ def __validate_color_scheme(
         return [background_color[0], text_color[0]]
 
 
-def __validate_float_fields(
-    value: float,
-    error_msg: str
-) -> float:
+def __validate_float_fields(value: float, error_msg: str) -> float:
     """Validate float values from a dictionary.
 
     Parameters
@@ -222,10 +218,7 @@ def __validate_float_fields(
         raise TypeError(error_msg)
 
 
-def validate_settings_existence(
-    g_settings: GraphicSettings,
-    def_settings: str
-) -> None:
+def validate_settings_existence(g_settings: GraphicSettings, def_settings: str) -> None:
     """Validate that there is either custom or default graphic settings to be used (i.e., either the user passed a dictionary of custom settings or an empty dictionary along with the specification of a default settings format).
 
     Parameters
@@ -248,14 +241,14 @@ def validate_settings_existence(
     # If True, then the custom settings are empty and the user chose a custom\
     # settings format, i.e., there are no graphic settings to use
     # Otherwise, there is either custom settings or a default format to use
-    settings_not_received = (custom_settings_empty and custom_format_chosen)
-    if (settings_not_received == True):
-        raise MissingGraphicSettings("You did not pass custom settings (`graphic_settings`) nor a default settings format (`default_settings_format`).\n\tYou can either specify your own settings in a dictionary or, if you don't want that, pass an empty dictionary and specify a default format: \"lyrics\" or \"quote\".\n\tYou can call the `settings_help` method for indications on the fields needed for custom settings.")
+    settings_not_received = custom_settings_empty and custom_format_chosen
+    if settings_not_received == True:
+        raise MissingGraphicSettings(
+            'You did not pass custom settings (`graphic_settings`) nor a default settings format (`default_settings_format`).\n\tYou can either specify your own settings in a dictionary or, if you don\'t want that, pass an empty dictionary and specify a default format: "lyrics" or "quote".\n\tYou can call the `settings_help` method for indications on the fields needed for custom settings.'
+        )
 
 
-def validate_format_option(
-    format_option: str
-) -> str:
+def validate_format_option(format_option: str) -> str:
     """Validate that the user chose an existing default settings option.
 
     Parameters
@@ -283,9 +276,7 @@ def validate_format_option(
         raise InvalidFormatOption(error_msg)
 
 
-def validate_g_settings(
-    g_settings: GraphicSettings
-) -> GraphicSettings:
+def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
     """Validate a complete `graphic_settings` dictionary.
 
     Parameters
@@ -303,31 +294,46 @@ def validate_g_settings(
 
     font_family_error_msg = f"The font {g_settings['font_family']} was not in found in your machine.\n\tPlease note you can provide an absolute path to your font if needed."
     font_family_validated = __validate_font_family(
-        g_settings["font_family"], font_family_error_msg)
+        g_settings["font_family"], font_family_error_msg
+    )
 
-    font_size_error_msg = "Please provide a number for the font size (preferably an integer)."
+    font_size_error_msg = (
+        "Please provide a number for the font size (preferably an integer)."
+    )
     font_size_header_validated = __validate_integer_fields(
-        g_settings["font_size_header"], font_size_error_msg)
+        g_settings["font_size_header"], font_size_error_msg
+    )
     font_size_text_validated = __validate_integer_fields(
-        g_settings["font_size_text"], font_size_error_msg)
+        g_settings["font_size_text"], font_size_error_msg
+    )
 
     size_error_msg_type = "Please provide a list of numbers for the width and height of the graphic (preferably an integer)."
     size_error_msg_length = "Please provide two measures for the graphic size: a first one for the width and a second for the height."
     size_validated = __validate_size(
-        g_settings["size"], size_error_msg_length, size_error_msg_type)
+        g_settings["size"], size_error_msg_length, size_error_msg_type
+    )
 
-    color_scheme_error_msg_format = "Please provide valid Hex color values for both the background and text colors."
+    color_scheme_error_msg_format = (
+        "Please provide valid Hex color values for both the background and text colors."
+    )
     color_scheme_error_msg_length = "Please provide two colors for the color scheme: a first one for the background and a second for the text."
     color_scheme_validated = __validate_color_scheme(
-        g_settings["color_scheme"], color_scheme_error_msg_length, color_scheme_error_msg_format)
+        g_settings["color_scheme"],
+        color_scheme_error_msg_length,
+        color_scheme_error_msg_format,
+    )
 
     wrap_limit_error_msg = "Please provide a number for the maximum number of characters to include in each line of the graphic text (preferably an integer)."
     wrap_limit_validated = __validate_integer_fields(
-        g_settings["wrap_limit"], wrap_limit_error_msg)
+        g_settings["wrap_limit"], wrap_limit_error_msg
+    )
 
-    margin_bottom_error_msg = "Please provide a number (float or int) for the margin bottom."
+    margin_bottom_error_msg = (
+        "Please provide a number (float or int) for the margin bottom."
+    )
     margin_bottom_validated = __validate_float_fields(
-        g_settings["margin_bottom"], margin_bottom_error_msg)
+        g_settings["margin_bottom"], margin_bottom_error_msg
+    )
 
     validated_settings = {
         "font_family": font_family_validated,
@@ -336,16 +342,13 @@ def validate_g_settings(
         "size": size_validated,
         "color_scheme": color_scheme_validated,
         "wrap_limit": wrap_limit_validated,
-        "margin_bottom": margin_bottom_validated
+        "margin_bottom": margin_bottom_validated,
     }
 
     return validated_settings
 
 
-def __validate_tweet_name(
-    tweet_name: str,
-    error_msg: str
-) -> str:
+def __validate_tweet_name(tweet_name: str, error_msg: str) -> str:
     """Validate the tweet's name.
 
     Parameters
@@ -371,10 +374,7 @@ def __validate_tweet_name(
         return tweet_name
 
 
-def __validate_username(
-    username: str,
-    error_msg: str
-) -> str:
+def __validate_username(username: str, error_msg: str) -> str:
     """Validate the tweet's name.
 
     Parameters
@@ -400,10 +400,7 @@ def __validate_username(
         return username
 
 
-def __validate_user_tag(
-    user_tag: str,
-    error_msg: str
-) -> str:
+def __validate_user_tag(user_tag: str, error_msg: str) -> str:
     """Validate the tweet's user tag/handle.
 
     Parameters
@@ -423,21 +420,18 @@ def __validate_user_tag(
     InvalidUserTag
         Raised for an invalid user tag.
     """
-    tag_pattern = r'[\w]{1,15}'
+    tag_pattern = r"[\w]{1,15}"
     regex_match = findall(tag_pattern, user_tag)
-    if (regex_match == list()):
+    if regex_match == list():
         raise InvalidUserTag(error_msg)
 
-    if (user_tag[0] == "@"):
+    if user_tag[0] == "@":
         return user_tag
     else:
-        return "@"+user_tag
+        return "@" + user_tag
 
 
-def __validate_user_pic(
-    user_pic_path: str,
-    error_msg: str
-) -> str:
+def __validate_user_pic(user_pic_path: str, error_msg: str) -> str:
     """Validate the path to the user's profile picture.
 
     Parameters
@@ -458,7 +452,7 @@ def __validate_user_pic(
         Raised for an invalid profile picture path.
     """
     try:
-        if (user_pic_path != ""):
+        if user_pic_path != "":
             pic = Image.open(user_pic_path, "r")
             return user_pic_path
         else:
@@ -467,10 +461,7 @@ def __validate_user_pic(
         raise InvalidProfilePicturePath(error_msg)
 
 
-def __validate_tweet_text(
-    tweet_text: str,
-    error_msg: str
-) -> str:
+def __validate_tweet_text(tweet_text: str, error_msg: str) -> str:
     """Validate the tweet's text.
 
     Parameters
@@ -496,9 +487,7 @@ def __validate_tweet_text(
         tweet_text
 
 
-def validate_tweet_info(
-    t_info: TweetInfo
-) -> TweetInfo:
+def validate_tweet_info(t_info: TweetInfo) -> TweetInfo:
     """Validate the given tweet's information (`tweet_info`).
 
     Parameters
@@ -516,30 +505,29 @@ def validate_tweet_info(
 
     tweet_name_error_msg = "Please provide a valid name for your tweet. This will be used to name your graphic."
     tweet_name_validated = __validate_tweet_name(
-        t_info["tweet_name"], tweet_name_error_msg)
+        t_info["tweet_name"], tweet_name_error_msg
+    )
 
     username_error_msg = "Please provide a valid Twitter username."
-    username_validated = __validate_username(
-        t_info["user_name"], username_error_msg)
+    username_validated = __validate_username(t_info["user_name"], username_error_msg)
 
     user_tag_error_msg = "Please provide a valid Twitter user tag/handle."
-    user_tag_validated = __validate_user_tag(
-        t_info["user_tag"], user_tag_error_msg)
+    user_tag_validated = __validate_user_tag(t_info["user_tag"], user_tag_error_msg)
 
     user_pic_error_msg = "Please provide a valid path for the profile picture location."
-    user_pic_validated = __validate_user_pic(
-        t_info["user_pic"], user_pic_error_msg)
+    user_pic_validated = __validate_user_pic(t_info["user_pic"], user_pic_error_msg)
 
     tweet_text_error_msg = "The tweet text must complies with the same rules as a normal tweet (namely the maximum of 280 characters)."
     tweet_text_validated = __validate_tweet_text(
-        t_info["tweet_text"], tweet_text_error_msg)
+        t_info["tweet_text"], tweet_text_error_msg
+    )
 
     t_info_validated = {
         "tweet_name": tweet_name_validated,
         "user_name": username_validated,
         "user_tag": user_tag_validated,
         "user_pic": user_pic_validated,
-        "tweet_text": tweet_text_validated
+        "tweet_text": tweet_text_validated,
     }
 
     return t_info_validated

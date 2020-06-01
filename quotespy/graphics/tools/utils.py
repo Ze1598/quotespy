@@ -8,9 +8,7 @@ from .type_interfaces import GraphicInfo, GraphicSettings
 from .validation import __validate_text_loaded
 
 
-def __load_quotes_txt(
-    file_path: str
-) -> List[Tuple[str]]:
+def __load_quotes_txt(file_path: str) -> List[Tuple[str]]:
     """Scrape quotes from a given TXT file. Titles need to be wrapped
     by square brackets ([]) and the respective quote needs to come in
     the next line.
@@ -30,10 +28,10 @@ def __load_quotes_txt(
         contents = "".join(source_file.readlines())
 
     # Get all the titles
-    pattern_titles = r'\[(.*?)\]'
+    pattern_titles = r"\[(.*?)\]"
     titles = re.findall(pattern_titles, contents)
     # Get all the quotes
-    pattern_quotes = r'^([^\[].*?[^\]])$'
+    pattern_quotes = r"^([^\[].*?[^\]])$"
     quotes = re.findall(pattern_quotes, contents, flags=re.MULTILINE)
 
     # Validate the loaded titles and quotes
@@ -45,9 +43,7 @@ def __load_quotes_txt(
     return titles_quotes
 
 
-def __load_text_json(
-    file_path: str
-) -> Dict[str, str]:
+def __load_text_json(file_path: str) -> Dict[str, str]:
     """Load quotes from a JSON file, i.e., load a JSON objects that maps titles to quotes/lyrics.
 
     Parameters
@@ -65,9 +61,7 @@ def __load_text_json(
     return json_quotes
 
 
-def parse_json_settings(
-    file_path: str
-) -> GraphicSettings:
+def parse_json_settings(file_path: str) -> GraphicSettings:
     """Load a the `graphic_settings` from a JSON file.
 
     Parameters
@@ -85,9 +79,7 @@ def parse_json_settings(
     return json_settings
 
 
-def __update_title_counts(
-    quotes: List[Tuple[str]]
-) -> Dict[str, str]:
+def __update_title_counts(quotes: List[Tuple[str]]) -> Dict[str, str]:
     """Given a list of lists of titles and quotes loaded from a .txt file, update the titles with the respective frequencies.
 
     Parameters
@@ -129,9 +121,7 @@ def __update_title_counts(
     return updated_quotes
 
 
-def get_ready_text(
-    file_path: str
-) -> Dict[str, str]:
+def get_ready_text(file_path: str) -> Dict[str, str]:
     """Load quotes/lyrics from a source file, .txt or .json, and update the corresponding
     quotes/lyrics' titles with their frequency (in the case of the former option).
 
