@@ -2,7 +2,7 @@
 
 ## Python library to create quotes/lyrics graphics with PIL
 
-It can be installed through pip using `pip install quotespy` (**not yet**).
+It can be installed through pip using `pip install quotespy`.
 
 ## Usage
 
@@ -182,9 +182,3 @@ for tweet in tweets:
     tweet["tweet_name"] = tweet_name + "_DM"
     t.create_tweet(tweet, s_dark, save_dir=tweet_path)
 ```
-
----
-
-## TODO
-* Review package structure
-* Finish package setup
