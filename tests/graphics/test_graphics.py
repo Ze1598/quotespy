@@ -1,8 +1,9 @@
 from os import path
 
 import pytest
-from PIL import Image
+from PIL import Image, ImageFont
 from pytest_mock import mocker
+from textwrap import wrap
 
 import quotespy
 import quotespy.graphics.graphics as src
@@ -125,3 +126,26 @@ def test_create_graphic_fails(mocker, graphic_info, graphic_settings, default_fo
             graphic_settings,
             default_settings_format=default_format
         )
+
+@pytest.mark.parametrize("text, char_limit, margin, height_avail, font_family, font_size, return_expected", [
+    ("You don't get anything playing the part when it's insincere", 20, 0, 2800, "Inkfree.ttf", 250, (833, [310, 310, 277, 237])),
+    ("Who needs memories", 9, 50, 2800, "Inkfree.ttf", 450, (945, [484, 425])),
+])
+def test_y_is_centered(mocker, text, char_limit, margin, height_avail, font_family, font_size, return_expected):
+    font = ImageFont.truetype(font_family, font_size, encoding="utf-8")
+    text_wrapped = wrap(text, char_limit)
+    returned_values = src.__get_y_and_heights(text_wrapped, height_avail, margin, font)
+    assert return_expected == returned_values
+
+@pytest.mark.parametrize("text, width, font_family, font_size, return_expected", [
+    ("Who needs", 2800, "Inkfree.ttf", 450, 441),
+    ("memories", 2800, "Inkfree.ttf", 450, 523),
+    ("You don't get", 2800, "Inkfree.ttf", 250, 704),
+    ("anything playing the", 2800, "Inkfree.ttf", 250, 318),
+    ("part when it's", 2800, "Inkfree.ttf", 250, 641),
+    ("insincere", 2800, "Inkfree.ttf", 250, 963)
+])
+def test_x_is_centered(mocker, text, width, font_family, font_size, return_expected):
+    font = ImageFont.truetype(font_family, font_size, encoding="utf-8")
+    returned_values = src.__get_x_centered(text, width, font)
+    assert return_expected == returned_values
