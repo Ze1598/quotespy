@@ -4,7 +4,7 @@ default_settings_lyrics = {
     "size": [2800, 2800],
     "color_scheme": ["#000000", "#ffffff"],
     "wrap_limit": 20,
-    "margin_bottom": 312.5
+    "margin_bottom": 0
 }
 
 default_settings_quote = {
@@ -13,7 +13,7 @@ default_settings_quote = {
     "size": [3840, 2160],
     "color_scheme": ["#000000", "#ffffff"],
     "wrap_limit": 32,
-    "margin_bottom": 250
+    "margin_bottom": 0
 }
 
 valid_custom_settings = {
@@ -22,7 +22,7 @@ valid_custom_settings = {
     "size": [2800, 2800],
     "color_scheme": ["#000", "#fff"],
     "wrap_limit": 20,
-    "margin_bottom": 312.5
+    "margin_bottom": 15
 }
 
 missing_font_family = {

@@ -58,7 +58,8 @@ def __choose_graphic_settings(
 
     # Validate and sanitize the default settings format chosen
     if default_settings_format != "":
-        default_settings_format = validate_format_option(default_settings_format)
+        default_settings_format = validate_format_option(
+            default_settings_format)
 
     # If the custom settings are just an empty dict, load the default settings format specified
     if graphic_settings == dict():
@@ -72,6 +73,89 @@ def __choose_graphic_settings(
     validate_g_settings(chosen_settings)
 
     return chosen_settings
+
+
+def __get_y_and_heights(
+    text_wrapped: List[str],
+    height_avail: int,
+    margin: float,
+    font: ImageFont.FreeTypeFont
+) -> Tuple[int, List[int]]:
+    """Calculate the height needed to draw all text lines, vertically centered.
+    Return the vertical coordinate to draw the first line at and a list of the heights for each line (margin included).
+
+    Parameters
+    ----------
+    text_wrapped : List[str]
+        Lines of text to draw.
+    height_avail : int
+        Height available to draw in (essentially the image's height).
+    margin : float
+        Vertical margin between text lines.
+    font : ImageFont.FreeTypeFont
+        Font used to draw.
+
+    Returns
+    -------
+    Tuple[int, List[int]]
+        The vertical coordinate of the first text line and a list with the heights of all lines.
+    """
+    # https://stackoverflow.com/a/46220683/9263761
+    ascent, descent = font.getmetrics()
+
+    # Calculate the height needed to draw each line of text
+    height_lines = [
+        font.getmask(text_line).getbbox()[3] +
+        font.font.getsize(text_line)[1][1] +
+        margin
+        for text_line in text_wrapped
+    ]
+    # The last line doesn't have a bottom margin
+    height_lines[-1] -= margin
+
+    # Total height needed
+    height_text = sum(height_lines)
+
+    # Calculate the Y coordinate at which to draw the first line of text
+    y = (height_avail - height_text) // 2
+
+    # Return the first Y coordinate and a list with the height of each line
+    return (y, height_lines)
+
+
+def __get_x_centered(
+    text_line: str,
+    width_avail: int,
+    font: ImageFont.FreeTypeFont
+) -> int:
+    """Get the X coordinate at which to draw a text line horizontally-centered.
+
+    Parameters
+    ----------
+    text_line : str
+        Text line to draw.
+    width_avail : int
+        Width available to draw (essentially the image's width).
+    font : ImageFont.FreeTypeFont
+        Font used to draw.
+
+    Returns
+    -------
+    int
+        The X coordinate at which to draw the text line horizontally-centered.
+    """
+    # https://stackoverflow.com/a/46220683/9263761
+    ascent, descent = font.getmetrics()
+
+    # Width needed to draw the line
+    width_text = font.getmask(text_line).getbbox()[
+        2] + font.font.getsize(text_line)[1][0]
+
+    # Calculate the centered X coordinate
+    x = (width_avail - width_text) // 2
+
+    # Return the first Y coordinate and a list with the height of each line
+    return x
 
 
 def create_graphic(
@@ -102,7 +186,8 @@ def create_graphic(
     validate_graphic_info(graphic_info)
 
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
 
     # Set up variables
     FNT = ImageFont.truetype(
@@ -116,28 +201,20 @@ def create_graphic(
     temp_img = Image.new("RGB", (0, 0))
     temp_img = ImageDraw.Draw(temp_img)
 
-    # Height of each text line to be drawn
-    line_heights = [
-        temp_img.textsize(text_wrapped[i], font=FNT)[1]
-        for i in range(len(text_wrapped))
-    ]
-    # Width of the longest line (hence the width of the text)
-    width_text = max([temp_img.textsize(line, font=FNT)[0] for line in text_wrapped])
-    # Total height needed to draw all lines
-    height_text = sum(line_heights)
-    # Set up the height at which to draw the next line (the first one right now)
-    y = (HEIGHT - height_text) // 2
+    margin_bottom = g_settings["margin_bottom"]
+    y, line_heights = __get_y_and_heights(
+        text_wrapped, HEIGHT, margin_bottom, FNT)
 
     # Create a new image
-    img = Image.new("RGB", (WIDTH, HEIGHT), color=g_settings["color_scheme"][0])
+    img = Image.new("RGB", (WIDTH, HEIGHT),
+                    color=g_settings["color_scheme"][0])
     # Create the drawing interface
     drawing_interface = ImageDraw.Draw(img)
 
     # Draw each line of text
-    for line in text_wrapped:
+    for i, line in enumerate(text_wrapped):
         # Find the X coordinate at which to draw the line, horizontally-centered
-        line_width = drawing_interface.textsize(line, font=FNT)[0]
-        x = (WIDTH - line_width) // 2
+        x = __get_x_centered(line, WIDTH, FNT)
 
         # Draw the line
         drawing_interface.text(
@@ -145,7 +222,7 @@ def create_graphic(
         )
 
         # Update the Y coordinate for the next line
-        y += g_settings["margin_bottom"]
+        y += line_heights[i]
 
     # Save the image
     save_name = f"{graphic_info['title']}.png"
@@ -153,7 +230,7 @@ def create_graphic(
     img.save(save_name)
 
 
-def gen_graphics(
+def gen_graphics_from_file(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
@@ -178,7 +255,8 @@ def gen_graphics(
     # titles have their respective frequency in the name)
     titles_quotes_updated = get_ready_text(file_path)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(graphic_settings, default_settings_format)
+    g_settings = __choose_graphic_settings(
+        graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for quote in titles_quotes_updated:

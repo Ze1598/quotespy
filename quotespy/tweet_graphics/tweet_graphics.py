@@ -139,7 +139,7 @@ def __draw_header(
         d_interface.text((x, y), user_tag, font=font, fill=color)
         y += int(font.size + margin * 1.5)
 
-    # Otherwise, draw the profile picture additionally
+    # Otherwise, draw the profile picture too
     else:
         # Process the profile picture and draw it
         user_pic_processed = process_pic(graphic_size, user_pic)
@@ -273,7 +273,7 @@ def create_tweet(
     img.save(save_name)
 
 
-def gen_tweets(
+def gen_tweets_from_file(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,

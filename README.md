@@ -37,7 +37,7 @@ custom_settings = {
     "size": [2800, 2800], 
     "color_scheme": ["#000", "#fff"], 
     "wrap_limit": 20, 
-    "margin_bottom": 312.5
+    "margin_bottom": 0
 }
 
 save_dir = "some_path"
