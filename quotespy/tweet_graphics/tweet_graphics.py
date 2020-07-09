@@ -273,7 +273,7 @@ def create_tweet(
     img.save(save_name)
 
 
-def gen_tweets(
+def gen_tweets_from_file(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,

@@ -230,7 +230,7 @@ def create_graphic(
     img.save(save_name)
 
 
-def gen_graphics(
+def gen_graphics_from_file(
     file_path: str,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
