@@ -154,7 +154,6 @@ def __get_x_centered(
     # Calculate the centered X coordinate
     x = (width_avail - width_text) // 2
 
-    print(x)
     # Return the first Y coordinate and a list with the height of each line
     return x
 

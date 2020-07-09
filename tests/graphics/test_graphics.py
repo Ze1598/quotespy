@@ -27,8 +27,8 @@ from .data_samples import (default_settings_lyrics, default_settings_quote,
     ("", None)
 ])
 def test_load_settings(mocker, format_chosen, return_settings):
+    print(return_settings)
     spy = mocker.spy(src, "__load_default_settings")
-    # format_chosen = "lyrics"
     src.__load_default_settings(format_chosen)
     assert spy.spy_return == return_settings
 
