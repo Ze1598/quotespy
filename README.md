@@ -44,6 +44,7 @@ save_dir = "some_path"
 
 g.create_graphic(graphic_info, custom_settings, save_dir=save_dir)
 ```
+
 Plus, in this second example, the path in which to save the created graphic is also specified. 
 
 Please note all fields/keys shown for `graphic_info` and for `custom_settings` in the examples are always required.
@@ -109,6 +110,39 @@ And, just like for the `create_graphics` module, you can also bulk generate twee
 import quotespy.tweet_graphics.tweet_graphics as t
 t.gen_tweets("samples\\tweets.json", {}, default_settings_format="dark")
 ```
+
+---
+
+### New in v1.2: transparent backgrounds
+
+Starting in version 1.2, quotespy now accepts RGBA color strings to create transparent backgrounds. The red, green and blue channels are integers between 0 and 255, the alpha/transparency value is a float between 0 and 1.
+
+```python
+import quotespy.tweet_graphics.tweet_graphics as t
+tweet_info = {
+    "tweet_name": "mistakes",
+    "user_name": "José Fernando Costa",
+    "user_tag": "@soulsinporto",
+    "user_pic": "user_photo2.png",
+    "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
+}
+graphic_settings = {
+    "font_family": "arial.ttf",
+    "font_size_text": 100,
+    "font_size_header": 80,
+    "size": [1800, 1800],
+    "color_scheme": ["rgba(255, 255, 255, 0)", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+t.create_tweet(tweet_info, graphic_settings)
+```
+
+Alternatively, `None` can be passed as the background color to create a transparent background. These new color options are available for both `tweet_graphics` and `graphics`.
+
+---
+
+### Real Example Usage
 
 Lastly, I'd like to you show some "advanced" usage of this `tweet_graphics` module (hopefully it serves as inspiration for the `graphics` module as well):
 
