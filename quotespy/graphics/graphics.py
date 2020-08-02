@@ -70,9 +70,9 @@ def __choose_graphic_settings(
         chosen_settings = graphic_settings
 
     # Validate the chosen settings, independent of it being custom or default settings
-    validate_g_settings(chosen_settings)
+    validated_settings = validate_g_settings(chosen_settings)
 
-    return chosen_settings
+    return validated_settings
 
 
 def __get_y_and_heights(
@@ -250,11 +250,8 @@ def gen_graphics_from_file(
     # Get the quotes from the source file (TXT or JSON) (make sure duplicate\
     # titles have their respective frequency in the name)
     titles_quotes_updated = get_ready_text(file_path)
-    # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for quote in titles_quotes_updated:
         quote_dict = {"title": quote, "text": titles_quotes_updated[quote]}
-        create_graphic(quote_dict, g_settings, save_dir=save_dir)
+        create_graphic(quote_dict, graphic_settings, save_dir=save_dir)
