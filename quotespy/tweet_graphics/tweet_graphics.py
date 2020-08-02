@@ -78,9 +78,9 @@ def __choose_graphic_settings(
         chosen_settings = graphic_settings
 
     # Validate the chosen settings, independent of it being custom or default settings
-    validate_g_settings(chosen_settings)
+    validated_settings = validate_g_settings(chosen_settings)
 
-    return chosen_settings
+    return validated_settings
 
 
 def __draw_header(
