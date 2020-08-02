@@ -1,6 +1,6 @@
 # quotespy
 
-## Python library to create quotes/lyrics graphics with PIL
+## Python library to create quotes/lyrics and tweet graphics with PIL
 
 It can be installed through pip using `pip install quotespy`.
 
