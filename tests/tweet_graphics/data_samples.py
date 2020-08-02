@@ -38,6 +38,24 @@ valid_custom_settings = {
     "wrap_limit": 32,
     "margin_bottom": 30
 }
+valid_custom_settings_rgba = {
+    "font_family": "arial.ttf",
+    "font_size_text": 100,
+    "font_size_header": 80,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+valid_custom_settings_none_bg = {
+    "font_family": "arial.ttf",
+    "font_size_text": 100,
+    "font_size_header": 80,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
 
 missing_font_family = {
     "font_size_text": 100,
@@ -156,6 +174,15 @@ invalid_color_scheme_value = {
     "font_size_header": 80,
     "size": [1800, 1800],
     "color_scheme": ["#15202b", "test"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+invalid_color_scheme_rgba = {
+    "font_family": "arial.ttf",
+    "font_size_text": 100,
+    "font_size_header": 80,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "rgba(0, 0, 255, -1)"],
     "wrap_limit": 32,
     "margin_bottom": 30
 }

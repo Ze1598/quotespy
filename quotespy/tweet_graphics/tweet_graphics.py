@@ -242,7 +242,7 @@ def create_tweet(
     x, y = __get_initial_coordinates(img_size, content_dims)
 
     # Create what will be the final image
-    img = Image.new("RGB", (img_size[0], img_size[1]), color=background_color)
+    img = Image.new("RGBA", (img_size[0], img_size[1]), color=background_color)
     # Create the drawing interface
     draw = ImageDraw.Draw(img)
 

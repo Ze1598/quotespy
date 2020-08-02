@@ -197,16 +197,12 @@ def create_graphic(
     # Break down the text into lines with a maximum of `wrap_limit` characters
     text_wrapped = wrap(graphic_info["text"], g_settings["wrap_limit"])
 
-    # Find the height and width needed to draw the text
-    temp_img = Image.new("RGB", (0, 0))
-    temp_img = ImageDraw.Draw(temp_img)
-
     margin_bottom = g_settings["margin_bottom"]
     y, line_heights = __get_y_and_heights(
         text_wrapped, HEIGHT, margin_bottom, FNT)
 
     # Create a new image
-    img = Image.new("RGB", (WIDTH, HEIGHT),
+    img = Image.new("RGBA", (WIDTH, HEIGHT),
                     color=g_settings["color_scheme"][0])
     # Create the drawing interface
     drawing_interface = ImageDraw.Draw(img)

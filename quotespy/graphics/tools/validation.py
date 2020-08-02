@@ -1,6 +1,6 @@
 from re import findall
 from typing import Dict, List, Optional, Tuple, Union
-from PIL import ImageFont
+from PIL import ImageFont, ImageColor
 from .errors import (
     FontNotFound,
     InvalidColorFormat,
@@ -182,8 +182,96 @@ def __validate_size(
     return [width, height]
 
 
+def __validate_rgba(
+    rgba_color: str, 
+    error_msg: str
+) -> str:
+    """Given a RGBA string with the transparency in the 0-1 range, transform it to the 0-255 range.
+
+    Parameters
+    ----------
+    rgba_color : str
+        The RGBA color.
+
+    Returns
+    -------
+    str
+        The input RGBA color string with its transparency in the 0-255 range.
+    """
+
+    rgba_pattern = r'^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$'
+    # List of lists of values/matches found
+    values = findall(rgba_pattern, rgba_color)
+    
+    # If no values matched, then there are invalid values in the color
+    if values == list():
+        raise InvalidColorFormat(error_msg)
+    
+    # Try to get the values from the list of matches, if there are not 4 values, the color has too few values
+    values = values[0]
+    if len(values) != 4:
+        raise InvalidColorFormat(error_msg)
+
+    # Verify the color channel values are in the valid range
+    for i in range(0, 3):
+        channel_value = int(values[i])
+        if (channel_value < 0) or (channel_value > 255):
+            raise InvalidColorFormat(error_msg)
+        
+    # Verify the transparency value is in the 0-1 range
+    transparency_value = float(values[-1])
+    if (transparency_value < 0) or (transparency_value > 1):
+        raise InvalidColorFormat(error_msg)
+
+    # Transform the transparency to the 0-255 range
+    transparency = int(transparency_value * 255)
+    # Update the RGBA color to be PIL-valid
+    validated_color = f"rgba({values[0]}, {values[1]}, {values[2]}, {transparency})"
+    
+    return validated_color
+
+
+def __validate_color(
+    color: str, 
+    error_msg: str
+) -> str:
+    """Validate a single color string.
+
+    Parameters
+    ----------
+    color : str
+        Color to be validated.
+    error_msg : str
+        Error message for invalid colors.
+
+    Returns
+    -------
+    str
+        Validated color string.
+
+    Raises
+    ------
+    InvalidColorFormat
+        Raised for invalid color strings.
+    """
+
+    # If it is a RGBA color, validate it individually
+    if color.startswith("rgba"):
+        color_validated = __validate_rgba(color, error_msg)
+    # Otherwise, validate it with PIL by trying to convert it to RGB
+    else:
+        try:
+            color_validated = ImageColor.getrgb(color)
+        except ValueError as e:
+            raise InvalidColorFormat(error_msg)
+
+    return color_validated
+
+
 def __validate_color_scheme(
-    value: List[str], error_msg_size: str, error_msg_color_format: str
+    value: List[str], 
+    error_msg_size: str, 
+    error_msg_color_format: str
 ) -> List[str]:
     """Validate the list that represents the graphic's color scheme (background and text colors in Hexadecimal format).
 
@@ -206,22 +294,24 @@ def __validate_color_scheme(
     InvalidFieldLength
         Raised if the list does not have the required length (two).
     InvalidColorFormat
-        Raised if either the background or text color are not valid Hexadecimal values.
+        Raised if either the background or text color are not valid Hexadecimal or RGBA values.
     """
     # Fist validate the list has the required length
     if len(value) != 2:
         raise InvalidFieldLength(error_msg_size)
 
-    # Use regex to verify the colors are written as valid Hexadecimal values
-    hex_color_pattern = r"^#(?:[0-9a-fA-F]{3}){1,2}$"
-    background_color = findall(hex_color_pattern, value[0])
-    text_color = findall(hex_color_pattern, value[1])
-    # If the regex didn't match either the background or the text color, raise an exception
-    if (background_color == list()) or (text_color == list()):
-        raise InvalidColorFormat(error_msg_color_format)
-    # Otherwise, the color scheme is valid
+    bg_color = value[0]
+    text_color = value[1]
+
+    # The background color can be `None` for transparent backgrounds
+    if (bg_color == None):
+        bg_color_validated = bg_color
     else:
-        return [background_color[0], text_color[0]]
+        bg_color_validated = __validate_color(bg_color, error_msg_color_format)
+    text_color_validated = __validate_color(text_color, error_msg_color_format)
+
+    # If no exception was raised, the colors are valid
+    return [bg_color_validated, text_color_validated]
 
 
 def __validate_float_fields(value: float, error_msg: str) -> float:

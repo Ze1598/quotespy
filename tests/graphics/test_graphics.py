@@ -7,6 +7,7 @@ from textwrap import wrap
 
 import quotespy
 import quotespy.graphics.graphics as src
+import quotespy.graphics.tools.validation as validation
 import quotespy.graphics.tools.errors as errors
 
 from .data_samples import (default_settings_lyrics, default_settings_quote,
@@ -18,7 +19,9 @@ from .data_samples import (default_settings_lyrics, default_settings_quote,
                            missing_color_scheme, missing_font_family,
                            missing_font_size, missing_margin, missing_size,
                            missing_text, missing_title, missing_wrap_limit,
-                           valid_custom_settings, valid_info, valid_info_list)
+                           valid_custom_settings, valid_info, valid_info_list,
+                           invalid_color_scheme_rgba, valid_custom_settings_rgba,
+                           valid_custom_settings_none_bg)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -38,7 +41,9 @@ def test_load_settings(mocker, format_chosen, return_settings):
     ({}, "lyrics", default_settings_lyrics),
     ({}, "quote", default_settings_quote),
     (valid_custom_settings, "lyrics", valid_custom_settings),
-    (valid_custom_settings, "quote", valid_custom_settings)
+    (valid_custom_settings, "quote", valid_custom_settings),
+    (valid_custom_settings_rgba, "", valid_custom_settings_rgba),
+    (valid_custom_settings_none_bg, "", valid_custom_settings_none_bg)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")
@@ -127,15 +132,19 @@ def test_create_graphic_fails(mocker, graphic_info, graphic_settings, default_fo
             default_settings_format=default_format
         )
 
+
 @pytest.mark.parametrize("text, char_limit, margin, height_avail, font_family, font_size, return_expected", [
-    ("You don't get anything playing the part when it's insincere", 20, 0, 2800, "Inkfree.ttf", 250, (833, [310, 310, 277, 237])),
+    ("You don't get anything playing the part when it's insincere",
+     20, 0, 2800, "Inkfree.ttf", 250, (833, [310, 310, 277, 237])),
     ("Who needs memories", 9, 50, 2800, "Inkfree.ttf", 450, (945, [484, 425])),
 ])
 def test_y_is_centered(mocker, text, char_limit, margin, height_avail, font_family, font_size, return_expected):
     font = ImageFont.truetype(font_family, font_size, encoding="utf-8")
     text_wrapped = wrap(text, char_limit)
-    returned_values = src.__get_y_and_heights(text_wrapped, height_avail, margin, font)
+    returned_values = src.__get_y_and_heights(
+        text_wrapped, height_avail, margin, font)
     assert return_expected == returned_values
+
 
 @pytest.mark.parametrize("text, width, font_family, font_size, return_expected", [
     ("Who needs", 2800, "Inkfree.ttf", 450, 441),
@@ -149,3 +158,27 @@ def test_x_is_centered(mocker, text, width, font_family, font_size, return_expec
     font = ImageFont.truetype(font_family, font_size, encoding="utf-8")
     returned_values = src.__get_x_centered(text, width, font)
     assert return_expected == returned_values
+
+
+@pytest.mark.parametrize("color, expected_value", [
+    ("rgba(0,0,0,0)", "rgba(0, 0, 0, 0)"),
+    ("rgba(0,0,0,1)", "rgba(0, 0, 0, 255)"),
+    ("rgba(0,0,255,0)", "rgba(0, 0, 255, 0)"),
+    ("rgba(123,124,12,0.75)", "rgba(123, 124, 12, 191)"),
+
+])
+def test_validate_rgba(mocker, color, expected_value):
+    error_msg = "Invalid color format"
+    assert expected_value == validation.__validate_rgba(color, error_msg)
+
+
+@pytest.mark.parametrize("g_settings", [
+    (invalid_color_scheme_rgba)
+])
+def test_validate_rgba_fails(mocker, g_settings):
+    error_msg_size = "Too few colors"
+    error_msg_format = "Invalid color format"
+    color_scheme = g_settings["color_scheme"]
+    with pytest.raises(errors.InvalidColorFormat):
+        validation.__validate_color_scheme(
+            color_scheme, error_msg_size, error_msg_format)

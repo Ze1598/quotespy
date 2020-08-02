@@ -6,6 +6,7 @@ from pytest_mock import mocker
 
 import quotespy
 import quotespy.tweet_graphics.tools.errors as errors
+import quotespy.tweet_graphics.tools.validation as validation
 import quotespy.tweet_graphics.tweet_graphics as src
 
 from .data_samples import (blue_mode_settings, dark_mode_settings,
@@ -22,7 +23,8 @@ from .data_samples import (blue_mode_settings, dark_mode_settings,
                            missing_name, missing_pic, missing_size,
                            missing_tag, missing_text, missing_username,
                            missing_wrap_limit, valid_custom_settings,
-                           valid_info, valid_info_list)
+                           valid_info, valid_info_list, invalid_color_scheme_rgba,
+                           valid_custom_settings_rgba, valid_custom_settings_none_bg)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -45,7 +47,9 @@ def test_load_settings(mocker, format_chosen, return_settings):
     ({}, "dark", dark_mode_settings),
     (valid_custom_settings, "blue", valid_custom_settings),
     (valid_custom_settings, "light", valid_custom_settings),
-    (valid_custom_settings, "dark", valid_custom_settings)
+    (valid_custom_settings, "dark", valid_custom_settings),
+    (valid_custom_settings_rgba, "", valid_custom_settings),
+    (valid_custom_settings_none_bg, "", valid_custom_settings)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")
@@ -129,6 +133,7 @@ def test_create_tweet(mocker, graphic_info, graphic_settings, default_format, sa
     (valid_info, invalid_size_value, "", TypeError),
     (valid_info, invalid_color_scheme_length, "", errors.InvalidFieldLength),
     (valid_info, invalid_color_scheme_value, "", errors.InvalidColorFormat),
+    (valid_info, invalid_color_scheme_rgba, "", errors.InvalidColorFormat),
     (valid_info, invalid_wrap_limit, "", TypeError),
     (valid_info, invalid_margin_bottom, "", TypeError)
 ])
@@ -175,3 +180,26 @@ def test_get_initial_coords(mocker):
 
     src.__get_initial_coordinates(size, dimensions)
     assert spy.spy_return == return_coords
+
+
+@pytest.mark.parametrize("color, expected_value", [
+    ("rgba(0,0,0,0)", "rgba(0, 0, 0, 0)"),
+    ("rgba(0,0,0,1)", "rgba(0, 0, 0, 255)"),
+    ("rgba(0,0,255,0)", "rgba(0, 0, 255, 0)"),
+    ("rgba(123,124,12,0.75)", "rgba(123, 124, 12, 191)"),
+    
+])
+def test_validate_rgba(mocker, color, expected_value):
+    error_msg = "Invalid color format"
+    assert expected_value == validation.__validate_rgba(color, error_msg)
+
+
+@pytest.mark.parametrize("g_settings", [
+    (invalid_color_scheme_rgba)
+])
+def test_validate_rgba_fails(mocker, g_settings):
+    error_msg_size = "Too few colors"
+    error_msg_format = "Invalid color format"
+    color_scheme = g_settings["color_scheme"]
+    with pytest.raises(errors.InvalidColorFormat):
+        validation.__validate_color_scheme(color_scheme, error_msg_size, error_msg_format)
