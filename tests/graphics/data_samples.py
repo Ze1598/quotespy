@@ -24,6 +24,22 @@ valid_custom_settings = {
     "wrap_limit": 20,
     "margin_bottom": 15
 }
+valid_custom_settings_rgba = {
+    "font_family": "arial.ttf",
+    "font_size": 100,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+valid_custom_settings_none_bg = {
+    "font_family": "arial.ttf",
+    "font_size": 100,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
 
 missing_font_family = {
     "font_size": 250,

@@ -20,7 +20,8 @@ from .data_samples import (default_settings_lyrics, default_settings_quote,
                            missing_font_size, missing_margin, missing_size,
                            missing_text, missing_title, missing_wrap_limit,
                            valid_custom_settings, valid_info, valid_info_list,
-                           invalid_color_scheme_rgba)
+                           invalid_color_scheme_rgba, valid_custom_settings_rgba,
+                           valid_custom_settings_none_bg)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -40,7 +41,9 @@ def test_load_settings(mocker, format_chosen, return_settings):
     ({}, "lyrics", default_settings_lyrics),
     ({}, "quote", default_settings_quote),
     (valid_custom_settings, "lyrics", valid_custom_settings),
-    (valid_custom_settings, "quote", valid_custom_settings)
+    (valid_custom_settings, "quote", valid_custom_settings),
+    (valid_custom_settings_rgba, "", valid_custom_settings_rgba),
+    (valid_custom_settings_none_bg, "", valid_custom_settings_none_bg)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")

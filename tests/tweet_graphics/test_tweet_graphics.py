@@ -23,7 +23,8 @@ from .data_samples import (blue_mode_settings, dark_mode_settings,
                            missing_name, missing_pic, missing_size,
                            missing_tag, missing_text, missing_username,
                            missing_wrap_limit, valid_custom_settings,
-                           valid_info, valid_info_list, invalid_color_scheme_rgba)
+                           valid_info, valid_info_list, invalid_color_scheme_rgba,
+                           valid_custom_settings_rgba, valid_custom_settings_none_bg)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -46,7 +47,9 @@ def test_load_settings(mocker, format_chosen, return_settings):
     ({}, "dark", dark_mode_settings),
     (valid_custom_settings, "blue", valid_custom_settings),
     (valid_custom_settings, "light", valid_custom_settings),
-    (valid_custom_settings, "dark", valid_custom_settings)
+    (valid_custom_settings, "dark", valid_custom_settings),
+    (valid_custom_settings_rgba, "", valid_custom_settings),
+    (valid_custom_settings_none_bg, "", valid_custom_settings)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")
