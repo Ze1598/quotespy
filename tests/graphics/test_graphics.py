@@ -21,7 +21,11 @@ from .data_samples import (default_settings_lyrics, default_settings_quote,
                            missing_text, missing_title, missing_wrap_limit,
                            valid_custom_settings, valid_info, valid_info_list,
                            invalid_color_scheme_rgba, valid_custom_settings_rgba,
-                           valid_custom_settings_none_bg)
+                           valid_custom_settings_none_bg, valid_custom_settings_returned,
+                           default_settings_quote_returned, 
+                           default_settings_lyrics_returned,
+                           valid_custom_settings_rgba_returned, 
+                           valid_custom_settings_none_bg_returned)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -37,13 +41,13 @@ def test_load_settings(mocker, format_chosen, return_settings):
 
 
 @pytest.mark.parametrize("custom_settings, default_format, expected_result", [
-    (valid_custom_settings, "", valid_custom_settings),
-    ({}, "lyrics", default_settings_lyrics),
-    ({}, "quote", default_settings_quote),
-    (valid_custom_settings, "lyrics", valid_custom_settings),
-    (valid_custom_settings, "quote", valid_custom_settings),
-    (valid_custom_settings_rgba, "", valid_custom_settings_rgba),
-    (valid_custom_settings_none_bg, "", valid_custom_settings_none_bg)
+    (valid_custom_settings, "", valid_custom_settings_returned),
+    ({}, "lyrics", default_settings_lyrics_returned),
+    ({}, "quote", default_settings_quote_returned),
+    (valid_custom_settings, "lyrics", valid_custom_settings_returned),
+    (valid_custom_settings, "quote", valid_custom_settings_returned),
+    (valid_custom_settings_rgba, "", valid_custom_settings_rgba_returned),
+    (valid_custom_settings_none_bg, "", valid_custom_settings_none_bg_returned)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")

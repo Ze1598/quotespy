@@ -6,12 +6,28 @@ default_settings_lyrics = {
     "wrap_limit": 20,
     "margin_bottom": 0
 }
+default_settings_lyrics_returned = {
+    "font_family": "arial.ttf",
+    "font_size": 250,
+    "size": [2800, 2800],
+    "color_scheme": [(0, 0, 0), (255, 255, 255)],
+    "wrap_limit": 20,
+    "margin_bottom": 0
+}
 
 default_settings_quote = {
     "font_family": "arial.ttf",
     "font_size": 200,
     "size": [3840, 2160],
     "color_scheme": ["#000000", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 0
+}
+default_settings_quote_returned = {
+    "font_family": "arial.ttf",
+    "font_size": 200,
+    "size": [3840, 2160],
+    "color_scheme": [(0, 0, 0), (255, 255, 255)],
     "wrap_limit": 32,
     "margin_bottom": 0
 }
@@ -24,11 +40,27 @@ valid_custom_settings = {
     "wrap_limit": 20,
     "margin_bottom": 15
 }
+valid_custom_settings_returned = {
+    "font_family": "arial.ttf",
+    "font_size": 250,
+    "size": [2800, 2800],
+    "color_scheme": [(0, 0, 0), (255, 255, 255)],
+    "wrap_limit": 20,
+    "margin_bottom": 15
+}
 valid_custom_settings_rgba = {
     "font_family": "arial.ttf",
     "font_size": 100,
     "size": [1800, 1800],
-    "color_scheme": ["#15202b", "#ffffff"],
+    "color_scheme": ["rgba(0, 0, 0, 0)", "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+valid_custom_settings_rgba_returned = {
+    "font_family": "arial.ttf",
+    "font_size": 100,
+    "size": [1800, 1800],
+    "color_scheme": ["rgba(0, 0, 0, 0)", (255, 255, 255)],
     "wrap_limit": 32,
     "margin_bottom": 30
 }
@@ -36,7 +68,15 @@ valid_custom_settings_none_bg = {
     "font_family": "arial.ttf",
     "font_size": 100,
     "size": [1800, 1800],
-    "color_scheme": ["#15202b", "#ffffff"],
+    "color_scheme": [None, "#ffffff"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
+valid_custom_settings_none_bg_returned = {
+    "font_family": "arial.ttf",
+    "font_size": 100,
+    "size": [1800, 1800],
+    "color_scheme": [None, (255, 255, 255)],
     "wrap_limit": 32,
     "margin_bottom": 30
 }

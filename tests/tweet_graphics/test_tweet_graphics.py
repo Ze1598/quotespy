@@ -24,7 +24,13 @@ from .data_samples import (blue_mode_settings, dark_mode_settings,
                            missing_tag, missing_text, missing_username,
                            missing_wrap_limit, valid_custom_settings,
                            valid_info, valid_info_list, invalid_color_scheme_rgba,
-                           valid_custom_settings_rgba, valid_custom_settings_none_bg)
+                           valid_custom_settings_rgba, valid_custom_settings_none_bg,
+                           valid_custom_settings_rgba_returned,
+                           valid_custom_settings_none_bg_returned,
+                           valid_custom_settings_returned,
+                           blue_mode_settings_returned,
+                           dark_mode_settings_returned,
+                           light_mode_settings_returned)
 
 
 @pytest.mark.parametrize("format_chosen, return_settings", [
@@ -41,15 +47,15 @@ def test_load_settings(mocker, format_chosen, return_settings):
 
 
 @pytest.mark.parametrize("custom_settings, default_format, expected_result", [
-    (valid_custom_settings, "", valid_custom_settings),
-    ({}, "blue", blue_mode_settings),
-    ({}, "light", light_mode_settings),
-    ({}, "dark", dark_mode_settings),
-    (valid_custom_settings, "blue", valid_custom_settings),
-    (valid_custom_settings, "light", valid_custom_settings),
-    (valid_custom_settings, "dark", valid_custom_settings),
-    (valid_custom_settings_rgba, "", valid_custom_settings),
-    (valid_custom_settings_none_bg, "", valid_custom_settings)
+    (valid_custom_settings, "", valid_custom_settings_returned),
+    ({}, "blue", blue_mode_settings_returned),
+    ({}, "light", light_mode_settings_returned),
+    ({}, "dark", dark_mode_settings_returned),
+    (valid_custom_settings, "blue", valid_custom_settings_returned),
+    (valid_custom_settings, "light", valid_custom_settings_returned),
+    (valid_custom_settings, "dark", valid_custom_settings_returned),
+    (valid_custom_settings_rgba, "", valid_custom_settings_rgba_returned),
+    (valid_custom_settings_none_bg, "", valid_custom_settings_none_bg_returned)
 ])
 def test_choose_settings_valid(mocker, custom_settings, default_format, expected_result):
     spy = mocker.spy(src, "__choose_graphic_settings")
