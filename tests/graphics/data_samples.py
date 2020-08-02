@@ -116,6 +116,15 @@ invalid_color_scheme_value = {
     "wrap_limit": 20,
     "margin_bottom": 312.5
 }
+invalid_color_scheme_rgba = {
+    "font_family": "arial.ttf",
+    "font_size_text": 100,
+    "font_size_header": 80,
+    "size": [1800, 1800],
+    "color_scheme": ["#15202b", "rgba(0, 0, 255, -1)"],
+    "wrap_limit": 32,
+    "margin_bottom": 30
+}
 invalid_wrap_limit = {
     "font_family": "arial.ttf",
     "font_size": 250,
