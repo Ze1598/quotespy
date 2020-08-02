@@ -8,7 +8,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="quotespy",
-    version="1.2",
+    version="1.2.1",
     description="Python library to create quotes/lyrics and tweet graphics with PIL.",
     long_description=long_description,
     long_description_content_type="text/markdown",
