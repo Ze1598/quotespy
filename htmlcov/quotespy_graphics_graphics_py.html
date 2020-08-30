@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for quotespy\graphics\graphics.py: 92%</title>
+    <title>Coverage for quotespy\graphics\graphics.py: 93%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery.hotkeys.js"></script>
@@ -17,13 +17,13 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>quotespy\graphics\graphics.py</b> :
-            <span class="pc_cov">92%</span>
+            <span class="pc_cov">93%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
-            59 statements &nbsp;
+            58 statements &nbsp;
             <span class="run shortkey_r button_toggle_run">54 run</span>
-            <span class="mis show_mis shortkey_m button_toggle_mis">5 missing</span>
+            <span class="mis show_mis shortkey_m button_toggle_mis">4 missing</span>
             <span class="exc show_exc shortkey_x button_toggle_exc">0 excluded</span>
         </h2>
     </div>
@@ -123,9 +123,9 @@
     <p id="t70" class="run"><span class="n"><a href="#t70">70</a></span><span class="t">        <span class="nam">chosen_settings</span> <span class="op">=</span> <span class="nam">graphic_settings</span>&nbsp;</span><span class="r"></span></p>
     <p id="t71" class="pln"><span class="n"><a href="#t71">71</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t72" class="pln"><span class="n"><a href="#t72">72</a></span><span class="t">    <span class="com"># Validate the chosen settings, independent of it being custom or default settings</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t73" class="run"><span class="n"><a href="#t73">73</a></span><span class="t">    <span class="nam">validate_g_settings</span><span class="op">(</span><span class="nam">chosen_settings</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t73" class="run"><span class="n"><a href="#t73">73</a></span><span class="t">    <span class="nam">validated_settings</span> <span class="op">=</span> <span class="nam">validate_g_settings</span><span class="op">(</span><span class="nam">chosen_settings</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t74" class="pln"><span class="n"><a href="#t74">74</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t75" class="run"><span class="n"><a href="#t75">75</a></span><span class="t">    <span class="key">return</span> <span class="nam">chosen_settings</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t75" class="run"><span class="n"><a href="#t75">75</a></span><span class="t">    <span class="key">return</span> <span class="nam">validated_settings</span>&nbsp;</span><span class="r"></span></p>
     <p id="t76" class="pln"><span class="n"><a href="#t76">76</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t77" class="pln"><span class="n"><a href="#t77">77</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t78" class="run"><span class="n"><a href="#t78">78</a></span><span class="t"><span class="key">def</span> <span class="nam">__get_y_and_heights</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -303,20 +303,17 @@
     <p id="t250" class="pln"><span class="n"><a href="#t250">250</a></span><span class="t">    <span class="com"># Get the quotes from the source file (TXT or JSON) (make sure duplicate\</span>&nbsp;</span><span class="r"></span></p>
     <p id="t251" class="pln"><span class="n"><a href="#t251">251</a></span><span class="t">    <span class="com"># titles have their respective frequency in the name)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t252" class="mis show_mis"><span class="n"><a href="#t252">252</a></span><span class="t">    <span class="nam">titles_quotes_updated</span> <span class="op">=</span> <span class="nam">get_ready_text</span><span class="op">(</span><span class="nam">file_path</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t253" class="pln"><span class="n"><a href="#t253">253</a></span><span class="t">    <span class="com"># Use the graphic settings passed (either custom or default)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t254" class="mis show_mis"><span class="n"><a href="#t254">254</a></span><span class="t">    <span class="nam">g_settings</span> <span class="op">=</span> <span class="nam">__choose_graphic_settings</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t255" class="pln"><span class="n"><a href="#t255">255</a></span><span class="t">        <span class="nam">graphic_settings</span><span class="op">,</span> <span class="nam">default_settings_format</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t256" class="pln"><span class="n"><a href="#t256">256</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t257" class="pln"><span class="n"><a href="#t257">257</a></span><span class="t">    <span class="com"># Create a graphic for each quote</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t258" class="mis show_mis"><span class="n"><a href="#t258">258</a></span><span class="t">    <span class="key">for</span> <span class="nam">quote</span> <span class="key">in</span> <span class="nam">titles_quotes_updated</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t259" class="mis show_mis"><span class="n"><a href="#t259">259</a></span><span class="t">        <span class="nam">quote_dict</span> <span class="op">=</span> <span class="op">{</span><span class="str">"title"</span><span class="op">:</span> <span class="nam">quote</span><span class="op">,</span> <span class="str">"text"</span><span class="op">:</span> <span class="nam">titles_quotes_updated</span><span class="op">[</span><span class="nam">quote</span><span class="op">]</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t260" class="mis show_mis"><span class="n"><a href="#t260">260</a></span><span class="t">        <span class="nam">create_graphic</span><span class="op">(</span><span class="nam">quote_dict</span><span class="op">,</span> <span class="nam">g_settings</span><span class="op">,</span> <span class="nam">save_dir</span><span class="op">=</span><span class="nam">save_dir</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t253" class="pln"><span class="n"><a href="#t253">253</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p id="t254" class="pln"><span class="n"><a href="#t254">254</a></span><span class="t">    <span class="com"># Create a graphic for each quote</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t255" class="mis show_mis"><span class="n"><a href="#t255">255</a></span><span class="t">    <span class="key">for</span> <span class="nam">quote</span> <span class="key">in</span> <span class="nam">titles_quotes_updated</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t256" class="mis show_mis"><span class="n"><a href="#t256">256</a></span><span class="t">        <span class="nam">quote_dict</span> <span class="op">=</span> <span class="op">{</span><span class="str">"title"</span><span class="op">:</span> <span class="nam">quote</span><span class="op">,</span> <span class="str">"text"</span><span class="op">:</span> <span class="nam">titles_quotes_updated</span><span class="op">[</span><span class="nam">quote</span><span class="op">]</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t257" class="mis show_mis"><span class="n"><a href="#t257">257</a></span><span class="t">        <span class="nam">create_graphic</span><span class="op">(</span><span class="nam">quote_dict</span><span class="op">,</span> <span class="nam">graphic_settings</span><span class="op">,</span> <span class="nam">save_dir</span><span class="op">=</span><span class="nam">save_dir</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </div>
 <div id="footer">
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.1</a>,
-            created at 2020-08-02 16:35
+            created at 2020-08-30 22:28
         </p>
     </div>
 </div>
