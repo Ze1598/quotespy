@@ -116,13 +116,15 @@ def __validate_integer_fields(value: int, error_msg: str) -> int:
 
 
 def __validate_size(
-    value: List[int], error_msg_length: str, error_msg_type: str
+    dimensions: List[int], 
+    error_msg_length: str, 
+    error_msg_type: str
 ) -> List[int]:
     """Validate the list that represents the size of the graphic (width and height).
 
     Parameters
     ----------
-    value : List[int]
+    dimensions : List[int]
         List of integers (width and height).
     error_msg_length : str
         Error message to display for a list that has too many or too few values.
@@ -140,13 +142,58 @@ def __validate_size(
         Raised when the list has more or less than two values.    
     """
     # Fist verify that the list has appropriate length
-    if len(value) != 2:
+    if len(dimensions) != 2:
         raise InvalidFieldLength(error_msg_length)
 
     # Now validate that both values are valid integers
-    width = __validate_integer_fields(value[0], error_msg_type)
-    height = __validate_integer_fields(value[1], error_msg_type)
+    width = __validate_integer_fields(dimensions[0], error_msg_type)
+    height = __validate_integer_fields(dimensions[1], error_msg_type)
     return [width, height]
+
+
+def __validate_profile_pic_size(
+    dimensions: List[int], 
+    error_msg_length: str, 
+    error_msg_type: str
+) -> List[int]:
+    """Validate the list that represents the final size of the profile picture (width and height).
+
+    Parameters
+    ----------
+    dimensions : List[int]
+        List of integers (width and height).
+    error_msg_length : str
+        Error message to display for a list that has too many or too few values.
+    error_msg_type : str
+        Error message to be displayed if one of the two values is not a valid integer.
+
+    Returns
+    -------
+    List[int]
+        Validated list.
+
+    Raises
+    ------
+    InvalidFieldLength
+        Raised when the list has more or less than two values.    
+    """
+    # Fist verify that the list has appropriate length
+    if len(dimensions) != 2:
+        raise InvalidFieldLength(error_msg_length)
+
+    # If either the width or height are None, then set them both to zero\
+    # (ensures it is not considered in future calculations nor causes\
+    # problems)
+    if None in dimensions:
+        width = 0
+        height = 0
+    # Otherwise validate both values
+    else:
+        width = __validate_integer_fields(dimensions[0], error_msg_type)
+        height = __validate_integer_fields(dimensions[1], error_msg_type)
+
+    return [width, height]
+
 
 
 def __validate_rgba(
@@ -397,10 +444,16 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
         g_settings["font_size_text"], font_size_error_msg
     )
 
-    size_error_msg_type = "Please provide a list of numbers for the width and height of the graphic (preferably an integer)."
-    size_error_msg_length = "Please provide two measures for the graphic size: a first one for the width and a second for the height."
+    size_error_msg_type = "Please provide a list of two numbers for the width and height of the graphic (preferably integers)."
+    size_error_msg_length = "Please provide two measures for the graphic size: a one for the width and a second for the height."
     size_validated = __validate_size(
         g_settings["size"], size_error_msg_length, size_error_msg_type
+    )
+
+    prof_pic_error_msg_type = "Please provide a list of two numbers for the final width and height of the profile picture (preferably integers)."
+    prof_pic_error_msg_length = "Please provide two measures for the profile picture size: one for the width and a second for the height."
+    profile_pic_size_validated = __validate_profile_pic_size(
+        g_settings["profile_pic_size"], prof_pic_error_msg_length, prof_pic_error_msg_type
     )
 
     color_scheme_error_msg_format = (
@@ -430,9 +483,10 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
         "font_size_header": font_size_header_validated,
         "font_size_text": font_size_text_validated,
         "size": size_validated,
+        "profile_pic_size": profile_pic_size_validated,
         "color_scheme": color_scheme_validated,
         "wrap_limit": wrap_limit_validated,
-        "margin_bottom": margin_bottom_validated,
+        "margin_bottom": margin_bottom_validated
     }
 
     return validated_settings
