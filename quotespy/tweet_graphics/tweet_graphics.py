@@ -81,7 +81,6 @@ def __choose_graphic_settings(
     # Otherwise, use the custom settingss
     else:
         chosen_settings = graphic_settings
-
     # Validate the chosen settings, independent of it being custom or default settings
     validated_settings = validate_g_settings(tweet_info, chosen_settings)
 
@@ -143,18 +142,18 @@ def __draw_header_with_profile_pic(
     # Draw the username
     for line in user_name:
         draw_interface.text(
-            (x_header_text, y), 
+            (x_header_text, y),
             line,
-            font=font_header, 
+            font=font_header,
             fill=text_color
         )
         y += font_header.size + margin
 
     # Draw the user tag
     draw_interface.text(
-        (x_header_text, y), 
+        (x_header_text, y),
         user_tag,
-        font=font_header, 
+        font=font_header,
         fill=text_color
     )
 
@@ -227,8 +226,9 @@ def __draw_header_without_profile_pic(
     # Return the current vertical coordinate
     return return_y
 
+
 def __get_initial_coordinates(
-    graphic_settings: GraphicSettings, 
+    graphic_settings: GraphicSettings,
     dimensions: Dict[str, List[int]]
 ) -> Tuple[int]:
     """Calculate the initial X and Y coordinates at which to start drawing.
@@ -289,22 +289,22 @@ def create_tweet(
     # Validate the tweet info
     t_info = validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
+    graphic_settings = __choose_graphic_settings(
         tweet_info, graphic_settings, default_settings_format)
 
     # Get the tweet info received
     tweet_text = tweet_info["tweet_text"]
     user_pic = tweet_info["user_pic"]
     # Dimensions of the graphic
-    img_size = g_settings["size"]
+    img_size = graphic_settings["size"]
     # Final dimensions of the profile picture
-    profile_pic_size = g_settings["profile_pic_size"]
+    profile_pic_size = graphic_settings["profile_pic_size"]
     # Vertical margin in between lines
-    margin_bottom = g_settings["margin_bottom"]
-    background_color = g_settings["color_scheme"][0]
-    text_color = g_settings["color_scheme"][1]
+    margin_bottom = graphic_settings["margin_bottom"]
+    background_color = graphic_settings["color_scheme"][0]
+    text_color = graphic_settings["color_scheme"][1]
     # Maximum number of character per line of text
-    chars_limit = g_settings["wrap_limit"]
+    chars_limit = graphic_settings["wrap_limit"]
 
     # Create all the fonts needed
     font_header, font_text = create_graphic_fonts(graphic_settings)
@@ -313,9 +313,9 @@ def create_tweet(
     if user_pic != "":
         # Process the profile picture
         profile_pic_processed = process_pic(graphic_settings, user_pic)
-        
+
     # Dictionary with dimensions for the header and text (width, height)
-    content_dims = calculate_content_dimensions(tweet_info, g_settings)
+    content_dims = calculate_content_dimensions(tweet_info, graphic_settings)
     header_height = content_dims["header"][1]
 
     # Create what will be the final image
@@ -325,7 +325,7 @@ def create_tweet(
 
     # Calculate the inital drawing coordinates for the header
     x, y = __get_initial_coordinates(graphic_settings, content_dims)
-    
+
     # Draw the header (and update the vertical coordinate to be where the\
     # tweet text starts)
     if user_pic == "":
@@ -371,9 +371,9 @@ def gen_tweets_from_file(
     # Load the tweets from a JSON file as a list of tweet_info dictionaries
     json_tweets = get_ready_tweets(file_path)
 
-
     # Create a graphic for each quote
     for tweet in json_tweets:
         # Use the graphic settings passed (either custom or default)
-        g_settings = __choose_graphic_settings(tweet, graphic_settings, default_settings_format)
+        g_settings = __choose_graphic_settings(
+            tweet, graphic_settings, default_settings_format)
         create_tweet(tweet, g_settings, save_dir=save_dir)

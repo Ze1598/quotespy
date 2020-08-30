@@ -330,6 +330,13 @@ def __validate_color_scheme(
     bg_color = value[0]
     text_color = value[1]
 
+    # The background color must be a string or `None` for transparent backgrounds
+    if (type(bg_color) != str) and (bg_color != None):
+        raise InvalidColorFormat(error_msg_color_format)
+
+    if (type(text_color) != str):
+        raise InvalidColorFormat(error_msg_color_format)
+
     # The background color can be `None` for transparent backgrounds
     if (bg_color == None):
         bg_color_validated = bg_color
@@ -477,7 +484,7 @@ def validate_g_settings(
     )
 
     color_scheme_error_msg_format = (
-        "Please provide either Hexadecimal or RGBA values for the background and text colors. The transparency value for RGBA colors must be a number between 0 and 1, where 0 is completely transparent and 1 is completely opaque. However, the background color can also be `None` for transparent backgrounds."
+        "Please provide either Hexadecimal or RGBA values for the background and text colors, as strings. The transparency value for RGBA colors must be a number between 0 and 1, where 0 is completely transparent and 1 is completely opaque. However, the background color can also be `None` for transparent backgrounds."
     )
     color_scheme_error_msg_length = "Please provide two colors for the color scheme: a first one for the background and a second for the text."
     color_scheme_validated = __validate_color_scheme(
