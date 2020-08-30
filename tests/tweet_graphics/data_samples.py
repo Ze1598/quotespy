@@ -260,11 +260,18 @@ invalid_margin_bottom = {
 }
 
 
-valid_info = {
+valid_info_no_picture = {
     "tweet_name": "test_name",
     "user_name": "test_username",
     "user_tag": "@testusertag",
     "user_pic": "",
+    "tweet_text": "test test test"
+}
+valid_info_with_picture = {
+    "tweet_name": "test_name",
+    "user_name": "test_username",
+    "user_tag": "@testusertag",
+    "user_pic": "resources\\profile_picture.jpg",
     "tweet_text": "test test test"
 }
 missing_name = {

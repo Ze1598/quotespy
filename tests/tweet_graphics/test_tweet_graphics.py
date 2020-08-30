@@ -7,6 +7,7 @@ from pytest_mock import mocker
 import quotespy
 import quotespy.tweet_graphics.tools.errors as errors
 import quotespy.tweet_graphics.tools.validation as validation
+import quotespy.tweet_graphics.tools.utils as utils
 import quotespy.tweet_graphics.tweet_graphics as src
 
 from .data_samples import (blue_mode_settings, dark_mode_settings,
@@ -23,7 +24,8 @@ from .data_samples import (blue_mode_settings, dark_mode_settings,
                            missing_name, missing_pic, missing_size,
                            missing_tag, missing_text, missing_username,
                            missing_wrap_limit, valid_custom_settings,
-                           valid_info, valid_info_list, invalid_color_scheme_rgba,
+                           valid_info_no_picture, valid_info_with_picture,
+                           valid_info_list, invalid_color_scheme_rgba,
                            valid_custom_settings_rgba, valid_custom_settings_none_bg,
                            valid_custom_settings_rgba_returned,
                            valid_custom_settings_none_bg_returned,
@@ -88,20 +90,23 @@ def test_choose_settings_invalid(mocker, custom_settings, default_format, expect
 
 
 @pytest.mark.parametrize("graphic_info, graphic_settings, default_format, save_dir", [
-    (valid_info, valid_custom_settings, "", ""),
-    (valid_info, valid_custom_settings, "blue", ""),
-    (valid_info, valid_custom_settings, "light", ""),
-    (valid_info, valid_custom_settings, "dark", ""),
-    (valid_info, valid_custom_settings, "", "C:\\Users\\user\\Desktop"),
-    (valid_info, valid_custom_settings, "blue", "C:\\Users\\user\\Desktop"),
-    (valid_info, valid_custom_settings, "light", "C:\\Users\\user\\Desktop"),
-    (valid_info, valid_custom_settings, "dark", "C:\\Users\\user\\Desktop"),
-    (valid_info, {}, "blue", ""),
-    (valid_info, {}, "blue", "C:\\Users\\user\\Desktop"),
-    (valid_info, {}, "light", ""),
-    (valid_info, {}, "light", "C:\\Users\\user\\Desktop"),
-    (valid_info, {}, "dark", ""),
-    (valid_info, {}, "dark", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, valid_custom_settings, "", ""),
+    (valid_info_no_picture, valid_custom_settings, "blue", ""),
+    (valid_info_no_picture, valid_custom_settings, "light", ""),
+    (valid_info_no_picture, valid_custom_settings, "dark", ""),
+    (valid_info_no_picture, valid_custom_settings, "", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, valid_custom_settings,
+     "blue", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, valid_custom_settings,
+     "light", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, valid_custom_settings,
+     "dark", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, {}, "blue", ""),
+    (valid_info_no_picture, {}, "blue", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, {}, "light", ""),
+    (valid_info_no_picture, {}, "light", "C:\\Users\\user\\Desktop"),
+    (valid_info_no_picture, {}, "dark", ""),
+    (valid_info_no_picture, {}, "dark", "C:\\Users\\user\\Desktop"),
 ])
 def test_create_tweet(mocker, graphic_info, graphic_settings, default_format, save_dir):
     # Mock the `save` method
@@ -125,23 +130,23 @@ def test_create_tweet(mocker, graphic_info, graphic_settings, default_format, sa
     (missing_tag, {}, "", errors.MissingDictKeys),
     (missing_pic, {}, "", errors.MissingDictKeys),
     (missing_text, {}, "", errors.MissingDictKeys),
-    (valid_info, missing_font_family, "", errors.MissingDictKeys),
-    (valid_info, missing_font_size_header, "", errors.MissingDictKeys),
-    (valid_info, missing_font_size_text, "", errors.MissingDictKeys),
-    (valid_info, missing_size, "", errors.MissingDictKeys),
-    (valid_info, missing_color_scheme, "", errors.MissingDictKeys),
-    (valid_info, missing_wrap_limit, "", errors.MissingDictKeys),
-    (valid_info, missing_margin, "", errors.MissingDictKeys),
-    (valid_info, invalid_font_family, "", errors.FontNotFound),
-    (valid_info, invalid_font_size_header, "", TypeError),
-    (valid_info, invalid_font_size_text, "", TypeError),
-    (valid_info, invalid_size_length, "", errors.InvalidFieldLength),
-    (valid_info, invalid_size_value, "", TypeError),
-    (valid_info, invalid_color_scheme_length, "", errors.InvalidFieldLength),
-    (valid_info, invalid_color_scheme_value, "", errors.InvalidColorFormat),
-    (valid_info, invalid_color_scheme_rgba, "", errors.InvalidColorFormat),
-    (valid_info, invalid_wrap_limit, "", TypeError),
-    (valid_info, invalid_margin_bottom, "", TypeError)
+    (valid_info_no_picture, missing_font_family, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_font_size_header, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_font_size_text, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_size, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_color_scheme, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_wrap_limit, "", errors.MissingDictKeys),
+    (valid_info_no_picture, missing_margin, "", errors.MissingDictKeys),
+    (valid_info_no_picture, invalid_font_family, "", errors.FontNotFound),
+    (valid_info_no_picture, invalid_font_size_header, "", TypeError),
+    (valid_info_no_picture, invalid_font_size_text, "", TypeError),
+    (valid_info_no_picture, invalid_size_length, "", errors.InvalidFieldLength),
+    (valid_info_no_picture, invalid_size_value, "", TypeError),
+    (valid_info_no_picture, invalid_color_scheme_length, "", errors.InvalidFieldLength),
+    (valid_info_no_picture, invalid_color_scheme_value, "", errors.InvalidColorFormat),
+    (valid_info_no_picture, invalid_color_scheme_rgba, "", errors.InvalidColorFormat),
+    (valid_info_no_picture, invalid_wrap_limit, "", TypeError),
+    (valid_info_no_picture, invalid_margin_bottom, "", TypeError)
 ])
 def test_create_graphic_fails(mocker, graphic_info, graphic_settings, default_format, expected_error):
     # Mock the `save` method
@@ -153,6 +158,15 @@ def test_create_graphic_fails(mocker, graphic_info, graphic_settings, default_fo
             graphic_settings,
             default_settings_format=default_format
         )
+
+
+@pytest.mark.parametrize("graphic_info, graphic_settings, expected_dimensions", [
+    (valid_info_no_picture, light_mode_settings, {"header": [530, 210.0], "text": [542, 92.0]}),
+    (valid_info_with_picture, light_mode_settings, {"header": [530, 210.0], "text": [542, 92.0]})
+])
+def test_calculate_content_dimensions(mocker, graphic_info, graphic_settings, expected_dimensions):
+    content_dimensions = utils.calculate_content_dimensions(graphic_info, light_mode_settings)
+    assert content_dimensions == expected_dimensions
 
 
 def test_draw_header(mocker):
@@ -192,8 +206,7 @@ def test_get_initial_coords(mocker):
     ("rgba(0,0,0,0)", "rgba(0, 0, 0, 0)"),
     ("rgba(0,0,0,1)", "rgba(0, 0, 0, 255)"),
     ("rgba(0,0,255,0)", "rgba(0, 0, 255, 0)"),
-    ("rgba(123,124,12,0.75)", "rgba(123, 124, 12, 191)"),
-    
+    ("rgba(123,124,12,0.75)", "rgba(123, 124, 12, 191)")
 ])
 def test_validate_rgba(mocker, color, expected_value):
     error_msg = "Invalid color format"
@@ -208,4 +221,5 @@ def test_validate_rgba_fails(mocker, g_settings):
     error_msg_format = "Invalid color format"
     color_scheme = g_settings["color_scheme"]
     with pytest.raises(errors.InvalidColorFormat):
-        validation.__validate_color_scheme(color_scheme, error_msg_size, error_msg_format)
+        validation.__validate_color_scheme(
+            color_scheme, error_msg_size, error_msg_format)
