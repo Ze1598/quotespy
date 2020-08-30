@@ -71,7 +71,7 @@ import quotespy.tweet_graphics.tweet_graphics as t
 tweet_info = {
     "tweet_name": "mistakes",
     "user_name": "José Fernando Costa",
-    "user_tag": "@soulsinporto",
+    "user_tag": "@ze1598",
     "user_pic": "user_photo2.png",
     "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
 }
@@ -88,7 +88,7 @@ import quotespy.tweet_graphics.tweet_graphics as t
 tweet_info = {
     "tweet_name": "mistakes",
     "user_name": "José Fernando Costa",
-    "user_tag": "@soulsinporto",
+    "user_tag": "@ze1598",
     "user_pic": "user_photo2.png",
     "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
 }
@@ -122,7 +122,7 @@ import quotespy.tweet_graphics.tweet_graphics as t
 tweet_info = {
     "tweet_name": "mistakes",
     "user_name": "José Fernando Costa",
-    "user_tag": "@soulsinporto",
+    "user_tag": "@ze1598",
     "user_pic": "user_photo2.png",
     "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
 }
@@ -142,6 +142,66 @@ Alternatively, `None` can be passed as the background color to create a transpar
 
 ---
 
+### New in v1.3 (tweet_graphics): custom profile picture size
+
+Starting with quotespy 1.3, it is possible to speficify the dimensions for which the profile picture will be cropped. By default, the picture is cropped to be one tenth of the graphic's width and height.
+
+In the following example, the profile picture will be cropped to the 120x120 size, as specified by the `profile_pic_size` key in the `graphic_settings`.
+
+```python
+import quotespy.tweet_graphics.tweet_graphics as t
+tweet_info = {
+    "tweet_name": "mistakes",
+    "user_name": "José Fernando Costa",
+    "user_tag": "@ze1598",
+    "user_pic": "user_photo2.png",
+    "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
+}
+graphic_settings = {
+    "font_family": "arial.ttf",
+    "font_size_text": 40,
+    "font_size_header": 25,
+    "size": [700, 700],
+    "profile_pic_size": [40, 40],
+    "color_scheme": ["#fff", "#000"],
+    "wrap_limit": 32,
+    "margin_bottom": 20
+}
+t.create_tweet(tweet_info, graphic_settings)
+```
+<img src="samples/prof_pic_size.png">
+
+However, if you want to stick with the default cropping dimensions, then you can pass two `None`s inside the `profile_pic_size` list. This is shown in the following example.
+
+```python
+import quotespy.tweet_graphics.tweet_graphics as t
+tweet_info = {
+    "tweet_name": "mistakes",
+    "user_name": "José Fernando Costa",
+    "user_tag": "@ze1598",
+    "user_pic": "user_photo2.png",
+    "tweet_text": "Some mistakes and, dare I say, failures may lead to results you had never thought you could achieve."
+}
+graphic_settings = {
+    "font_family": "arial.ttf",
+    "font_size_text": 40,
+    "font_size_header": 25,
+    "size": [700, 700],
+    "profile_pic_size": [None, None],
+    "color_scheme": ["#fff", "#000"],
+    "wrap_limit": 32,
+    "margin_bottom": 20
+}
+t.create_tweet(tweet_info, graphic_settings)
+```
+<img src="samples/prof_pic_size_default.png">
+
+Caveats for the custom profile picture size:
+* The picture is not vertically aligned in the header;
+* The width and the height must use the same value (that is, it must be a square).
+
+---
+
 ### Real Example Usage
 
 Lastly, I'd like to you show some "advanced" usage of this `tweet_graphics` module (hopefully it serves as inspiration for the `graphics` module as well):
@@ -152,7 +212,7 @@ import os
 SAVEDIR = "imgs"
 
 USERNAME = "José Fernando Costa"
-USERTAG = "@soulsinporto"
+USERTAG = "@ze1598"
 # List of `tweet_info` dictionaries
 tweets = [
     {
@@ -185,11 +245,13 @@ titles = [tweet["tweet_name"] for tweet in tweets]
 PATH = "some_path"
 
 # Create custom light and dark mode settings
+# With `None` for the profile picture size it will default to be resized to one tenth of the graphic's size
 s_light = {
     "font_family": "arial.ttf",
     "font_size_text": 80,
     "font_size_header": 70,
     "size": [1800, 1800],
+    "profile_pic_size": [None, None],
     "color_scheme": ["#ffffff", "#000000"],
     "wrap_limit": 36,
     "margin_bottom": 30
@@ -199,6 +261,7 @@ s_dark = {
     "font_size_text": 80,
     "font_size_header": 70,
     "size": [1800, 1800],
+    "profile_pic_size": [None, None],
     "color_scheme": ["#000000", "#ffffff"],
     "wrap_limit": 36,
     "margin_bottom": 30
