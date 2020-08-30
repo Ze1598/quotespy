@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = ">=5.4.2"
+pytest-mock = ">=3.1.0"
+pytest-cov = ">=2.9.0"
+pytest-random-order = ">=1.0.4"
+
+[packages]
+pillow = ">=7.1.2"
+typing-extensions = ">=3.7.4.2"
+
+[requires]
+python_version = "3.7"

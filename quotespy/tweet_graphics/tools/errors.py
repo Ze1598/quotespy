@@ -163,6 +163,21 @@ class InvalidProfilePicturePath(Exception):
         self.msg = msg
 
 
+class InvalidProfilePictureDimensions(Exception):
+    """Error raised when the tweet's user profile picture dimensions specified in the `graphic_settings` dictionary is not valid.
+    """
+
+    def __init__(self, msg):
+        """Initializes InvalidProfilePictureDimensions with an error message.
+
+        Parameters
+        ----------
+        msg : str
+            The error message.
+        """
+        self.msg = msg
+
+
 class InvalidTweetText(Exception):
     """Error raised when the tweet text specified in the `tweet_info` dictionary is not valid.
     """

@@ -11,6 +11,7 @@ class GraphicSettings(TypedDict):
     font_size_header: int
     font_size_text: int
     size: List[int]
+    profile_pic_size: List[int]
     color_scheme: List[str]
     wrap_limit: int
     margin_bottom: float

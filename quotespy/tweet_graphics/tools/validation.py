@@ -7,13 +7,14 @@ from .errors import (
     InvalidFieldLength,
     InvalidFormatOption,
     InvalidProfilePicturePath,
+    InvalidProfilePictureDimensions,
     InvalidTweetName,
     InvalidTweetText,
     InvalidUsername,
     InvalidUserTag,
     MissingGraphicField,
     MissingGraphicSettings,
-    MissingDictKeys,
+    MissingDictKeys
 )
 from .type_interfaces import DefaultFormats, GraphicSettings, TweetInfo
 
@@ -116,13 +117,15 @@ def __validate_integer_fields(value: int, error_msg: str) -> int:
 
 
 def __validate_size(
-    value: List[int], error_msg_length: str, error_msg_type: str
+    dimensions: List[int],
+    error_msg_length: str,
+    error_msg_type: str
 ) -> List[int]:
     """Validate the list that represents the size of the graphic (width and height).
 
     Parameters
     ----------
-    value : List[int]
+    dimensions : List[int]
         List of integers (width and height).
     error_msg_length : str
         Error message to display for a list that has too many or too few values.
@@ -140,17 +143,74 @@ def __validate_size(
         Raised when the list has more or less than two values.    
     """
     # Fist verify that the list has appropriate length
-    if len(value) != 2:
+    if len(dimensions) != 2:
         raise InvalidFieldLength(error_msg_length)
 
     # Now validate that both values are valid integers
-    width = __validate_integer_fields(value[0], error_msg_type)
-    height = __validate_integer_fields(value[1], error_msg_type)
+    width = __validate_integer_fields(dimensions[0], error_msg_type)
+    height = __validate_integer_fields(dimensions[1], error_msg_type)
+    return [width, height]
+
+
+def __validate_profile_pic_size(
+    dimensions: List[int],
+    user_pic: str,
+    error_msg_length: str,
+    error_msg_type: str
+) -> List[int]:
+    """Validate the list that represents the final size of the profile picture (width and height).
+
+    Parameters
+    ----------
+    dimensions : List[int]
+        List of integers (width and height).
+    user_pic : str
+        Path to the user profile picture.
+    error_msg_length : str
+        Error message to display for a list that has too many or too few values.
+    error_msg_type : str
+        Error message to be displayed if one of the two values is not a valid integer.
+
+    Returns
+    -------
+    List[int]
+        Validated list.
+
+    Raises
+    ------
+    InvalidFieldLength
+        Raised when the list has more or less than two values.
+    InvalidProfilePictureDimensions
+        Raised when width is not the same as the height.
+    """
+    # Fist verify that the list has appropriate length
+    if len(dimensions) != 2:
+        raise InvalidFieldLength(error_msg_length)
+
+    # If the path to the profile picture is blank, return the validated\
+    # dimensions right away
+    if user_pic == "":
+        return [0, 0]
+
+    # If either the width or height are None, then set them both to zero\
+    # (ensures it is not considered in future calculations nor causes\
+    # problems)
+    if None in dimensions:
+        width = 0
+        height = 0
+    # Otherwise validate both values
+    else:
+        width = __validate_integer_fields(dimensions[0], error_msg_type)
+        height = __validate_integer_fields(dimensions[1], error_msg_type)
+
+    if width != height:
+        raise InvalidProfilePictureDimensions(error_msg_type)
+    
     return [width, height]
 
 
 def __validate_rgba(
-    rgba_color: str, 
+    rgba_color: str,
     error_msg: str
 ) -> str:
     """Given a RGBA string with the transparency in the 0-1 range, transform it to the 0-255 range.
@@ -169,11 +229,11 @@ def __validate_rgba(
     rgba_pattern = r'^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$'
     # List of lists of values/matches found
     values = findall(rgba_pattern, rgba_color)
-    
+
     # If no values matched, then there are invalid values in the color
     if values == list():
         raise InvalidColorFormat(error_msg)
-    
+
     # Try to get the values from the list of matches, if there are not 4 values, the color has too few values
     values = values[0]
     if len(values) != 4:
@@ -184,7 +244,7 @@ def __validate_rgba(
         channel_value = int(values[i])
         if (channel_value < 0) or (channel_value > 255):
             raise InvalidColorFormat(error_msg)
-        
+
     # Verify the transparency value is in the 0-1 range
     transparency_value = float(values[-1])
     if (transparency_value < 0) or (transparency_value > 1):
@@ -194,12 +254,12 @@ def __validate_rgba(
     transparency = int(transparency_value * 255)
     # Update the RGBA color to be PIL-valid
     validated_color = f"rgba({values[0]}, {values[1]}, {values[2]}, {transparency})"
-    
+
     return validated_color
 
 
 def __validate_color(
-    color: str, 
+    color: str,
     error_msg: str
 ) -> str:
     """Validate a single color string.
@@ -236,8 +296,8 @@ def __validate_color(
 
 
 def __validate_color_scheme(
-    value: List[str], 
-    error_msg_size: str, 
+    value: List[str],
+    error_msg_size: str,
     error_msg_color_format: str
 ) -> List[str]:
     """Validate the list that represents the graphic's color scheme (background and text colors in Hexadecimal format).
@@ -269,6 +329,13 @@ def __validate_color_scheme(
 
     bg_color = value[0]
     text_color = value[1]
+
+    # The background color must be a string or `None` for transparent backgrounds
+    if (type(bg_color) != str) and (bg_color != None):
+        raise InvalidColorFormat(error_msg_color_format)
+
+    if (type(text_color) != str):
+        raise InvalidColorFormat(error_msg_color_format)
 
     # The background color can be `None` for transparent backgrounds
     if (bg_color == None):
@@ -366,11 +433,16 @@ def validate_format_option(format_option: str) -> str:
         raise InvalidFormatOption(error_msg)
 
 
-def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
+def validate_g_settings(
+    tweet_info: TweetInfo,
+    g_settings: GraphicSettings
+) -> GraphicSettings:
     """Validate a complete `graphic_settings` dictionary.
 
     Parameters
     ----------
+    tweet_info : TweetInfo
+        Dictionary with the necessary information about the tweet.
     g_settings : GraphicSettings
         Dictionary of graphic settings.
 
@@ -381,6 +453,8 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
     """
     # Validate if the dictionary has all the required fields
     __validate_dict_keys(g_settings, GraphicSettings, "graphic_settings")
+
+    user_pic = tweet_info["user_pic"]
 
     font_family_error_msg = f"The font {g_settings['font_family']} was not in found in your machine.\n\tPlease note you can provide an absolute path to your font if needed."
     font_family_validated = __validate_font_family(
@@ -397,14 +471,20 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
         g_settings["font_size_text"], font_size_error_msg
     )
 
-    size_error_msg_type = "Please provide a list of numbers for the width and height of the graphic (preferably an integer)."
-    size_error_msg_length = "Please provide two measures for the graphic size: a first one for the width and a second for the height."
+    size_error_msg_type = "Please provide a list of two integers for the width and height of the graphic."
+    size_error_msg_length = "Please provide two measures for the graphic size: a one for the width and a second for the height."
     size_validated = __validate_size(
         g_settings["size"], size_error_msg_length, size_error_msg_type
     )
 
+    prof_pic_error_msg_type = "Please provide a list of two integers for the final width and height of the profile picture, taking into account the width and the height must be the same."
+    prof_pic_error_msg_length = "Please provide two measures for the profile picture size: one for the width and a second for the height."
+    profile_pic_size_validated = __validate_profile_pic_size(
+        g_settings["profile_pic_size"], user_pic, prof_pic_error_msg_length, prof_pic_error_msg_type
+    )
+
     color_scheme_error_msg_format = (
-        "Please provide either Hexadecimal or RGBA values for the background and text colors. The transparency value for RGBA colors must be a number between 0 and 1, where 0 is completely transparent and 1 is completely opaque. However, the background color can also be `None` for transparent backgrounds."
+        "Please provide either Hexadecimal or RGBA values for the background and text colors, as strings. The transparency value for RGBA colors must be a number between 0 and 1, where 0 is completely transparent and 1 is completely opaque. However, the background color can also be `None` for transparent backgrounds."
     )
     color_scheme_error_msg_length = "Please provide two colors for the color scheme: a first one for the background and a second for the text."
     color_scheme_validated = __validate_color_scheme(
@@ -430,9 +510,10 @@ def validate_g_settings(g_settings: GraphicSettings) -> GraphicSettings:
         "font_size_header": font_size_header_validated,
         "font_size_text": font_size_text_validated,
         "size": size_validated,
+        "profile_pic_size": profile_pic_size_validated,
         "color_scheme": color_scheme_validated,
         "wrap_limit": wrap_limit_validated,
-        "margin_bottom": margin_bottom_validated,
+        "margin_bottom": margin_bottom_validated
     }
 
     return validated_settings
@@ -599,13 +680,16 @@ def validate_tweet_info(t_info: TweetInfo) -> TweetInfo:
     )
 
     username_error_msg = "Please provide a valid Twitter username."
-    username_validated = __validate_username(t_info["user_name"], username_error_msg)
+    username_validated = __validate_username(
+        t_info["user_name"], username_error_msg)
 
     user_tag_error_msg = "Please provide a valid Twitter user tag/handle."
-    user_tag_validated = __validate_user_tag(t_info["user_tag"], user_tag_error_msg)
+    user_tag_validated = __validate_user_tag(
+        t_info["user_tag"], user_tag_error_msg)
 
     user_pic_error_msg = "Please provide a valid path for the profile picture location."
-    user_pic_validated = __validate_user_pic(t_info["user_pic"], user_pic_error_msg)
+    user_pic_validated = __validate_user_pic(
+        t_info["user_pic"], user_pic_error_msg)
 
     tweet_text_error_msg = "The tweet text must complies with the same rules as a normal tweet (namely the maximum of 280 characters)."
     tweet_text_validated = __validate_tweet_text(
