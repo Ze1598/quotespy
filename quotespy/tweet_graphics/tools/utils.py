@@ -103,9 +103,7 @@ def __calculate_header_height(
     # If the username fits in a single line, the header height is given by the\
     # profile picture
     if len(user_name) == 1:
-        height_header = height_header = (
-            profile_pic_size[1] * 0.1
-            ) + height_margin
+        height_header = profile_pic_size[1] + height_margin
     # Otherwise the height is the sum of the username height, tag and margin
     else:
         # Total username height is the sum of height of each username line
