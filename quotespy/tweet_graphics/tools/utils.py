@@ -281,8 +281,8 @@ def process_pic(
     # If there's no profile pic dimensions, set it to be the default\
     # value: one tenth of the graphic's dimensions
     if 0 in profile_pic_dimensions:
-        width = graphic_dimensions[0] * 0.1
-        height = graphic_dimensions[1] * 0.1
+        width = int(graphic_dimensions[0] * 0.1)
+        height = int(graphic_dimensions[1] * 0.1)
         new_dimensions = (width, height)
     else:
         new_dimensions = tuple(profile_pic_dimensions)

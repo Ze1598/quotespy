@@ -121,7 +121,25 @@ def test_choose_settings_invalid(mocker, tweet_info, custom_settings, default_fo
     (valid_info_no_picture, {}, "light", ""),
     (valid_info_no_picture, {}, "light", "C:\\Users\\user\\Desktop"),
     (valid_info_no_picture, {}, "dark", ""),
-    (valid_info_no_picture, {}, "dark", "C:\\Users\\user\\Desktop")
+    (valid_info_no_picture, {}, "dark", "C:\\Users\\user\\Desktop"),
+    # Mock Image.open method
+    # (valid_info_with_picture, valid_custom_settings, "", ""),
+    # (valid_info_with_picture, valid_custom_settings, "blue", ""),
+    # (valid_info_with_picture, valid_custom_settings, "light", ""),
+    # (valid_info_with_picture, valid_custom_settings, "dark", ""),
+    # (valid_info_with_picture, valid_custom_settings, "", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, valid_custom_settings,
+    #  "blue", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, valid_custom_settings,
+    #  "light", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, valid_custom_settings,
+    #  "dark", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, {}, "blue", ""),
+    # (valid_info_with_picture, {}, "blue", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, {}, "light", ""),
+    # (valid_info_with_picture, {}, "light", "C:\\Users\\user\\Desktop"),
+    # (valid_info_with_picture, {}, "dark", ""),
+    # (valid_info_with_picture, {}, "dark", "C:\\Users\\user\\Desktop")
 ])
 def test_create_tweet(mocker, graphic_info, graphic_settings, default_format, save_dir):
     # Mock the `save` method

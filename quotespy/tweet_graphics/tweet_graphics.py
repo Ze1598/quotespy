@@ -130,6 +130,8 @@ def __draw_header_with_profile_pic(
     user_tag = tweet_info["user_tag"]
     text_color = graphic_settings["color_scheme"][1]
     margin = graphic_settings["margin_bottom"]
+    img_width = graphic_settings["size"][0]
+    img_height = graphic_settings["size"][1]
     profile_pic_height = graphic_settings["profile_pic_size"][1]
     profile_pic_width = graphic_settings["profile_pic_size"][0]
     user_name = wrap(username, 19)
@@ -137,7 +139,12 @@ def __draw_header_with_profile_pic(
     # Draw the profile picture
     wip_img.paste(profile_picture, (x, y), mask=profile_picture)
     # Horizontal coordinate at which to draw the username and user tag
-    x_header_text = int(coordinates[0] + profile_pic_width + margin)
+    # If the profile picture dimensions were left to default values,\
+    # then get the its width relative to the graphic's dimensions
+    if profile_pic_width == 0:
+        x_header_text = int(coordinates[0] + img_width*0.1 + margin)
+    else:
+        x_header_text = int(coordinates[0] + profile_pic_width + margin)
 
     # Draw the username
     for line in user_name:
