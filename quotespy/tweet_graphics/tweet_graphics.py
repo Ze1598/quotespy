@@ -45,6 +45,7 @@ def __load_default_settings(default_settings_format: str) -> GraphicSettings:
 
 
 def __choose_graphic_settings(
+    tweet_info: TweetInfo,
     graphic_settings: GraphicSettings,
     default_settings_format: DefaultFormats = DefaultFormats.CUSTOM.value,
 ) -> GraphicSettings:
@@ -53,6 +54,8 @@ def __choose_graphic_settings(
 
     Parameters
     ----------
+    tweet_info : TweetInfo
+        Dictionary with the necessary information about the tweet.
     graphic_settings : GraphicSettings
         Custom graphic settings dictionary.
     default_settings_format : DefaultFormats, optional
@@ -80,7 +83,7 @@ def __choose_graphic_settings(
         chosen_settings = graphic_settings
 
     # Validate the chosen settings, independent of it being custom or default settings
-    validated_settings = validate_g_settings(chosen_settings)
+    validated_settings = validate_g_settings(tweet_info, chosen_settings)
 
     return validated_settings
 
@@ -91,6 +94,7 @@ def __draw_header_with_profile_pic(
     wip_img: Image.Image,
     draw_interface: ImageDraw.ImageDraw,
     coordinates: Tuple[int],
+    header_height: int,
     font_header: ImageFont.FreeTypeFont,
     profile_picture: Image.Image
 ) -> int:
@@ -108,6 +112,8 @@ def __draw_header_with_profile_pic(
         Interface used to draw in the Image.
     coordinates : Tuple[int]
         Initial coordinates at which to draw the header.
+    header_height: int
+        Total height of the header.
     font_header : ImageFont.FreeTypeFont
         Font used for the header.
     profile_picture : Image.Image
@@ -118,13 +124,14 @@ def __draw_header_with_profile_pic(
     int
         Vertical coordinate at which to start drawing the tweet body.
     """
-    x = int(coordinates[0])
-    y = int(coordinates[1])
+    x = coordinates[0]
+    y = coordinates[1]
 
     username = tweet_info["user_name"]
     user_tag = tweet_info["user_tag"]
     text_color = graphic_settings["color_scheme"][1]
     margin = graphic_settings["margin_bottom"]
+    profile_pic_height = graphic_settings["profile_pic_size"][1]
     profile_pic_width = graphic_settings["profile_pic_size"][0]
     user_name = wrap(username, 19)
 
@@ -144,12 +151,19 @@ def __draw_header_with_profile_pic(
         y += font_header.size + margin
 
     # Draw the user tag
-    draw_interface.text((x_header_text, y), user_tag,
-                        font=font_header, fill=text_color)
-    y += int(font_header.size + margin * 1.5)
+    draw_interface.text(
+        (x_header_text, y), 
+        user_tag,
+        font=font_header, 
+        fill=text_color
+    )
+
+    # Calculate the vertical coordinate at which to start drawing the\
+    # tweet text
+    return_y = coordinates[1] + header_height + margin
 
     # Return the current vertical coordinate
-    return y
+    return return_y
 
 
 def __draw_header_without_profile_pic(
@@ -158,6 +172,7 @@ def __draw_header_without_profile_pic(
     wip_img: Image.Image,
     draw_interface: ImageDraw.ImageDraw,
     coordinates: Tuple[int],
+    header_height: int,
     font_header: ImageFont.FreeTypeFont,
 ) -> int:
     """Draw the graphic's header: username and user tag only.
@@ -174,6 +189,8 @@ def __draw_header_without_profile_pic(
         Interface used to draw in the Image.
     coordinates : Tuple[int]
         Initial coordinates at which to draw the header.
+    header_height : int
+        Total height of the header.
     font_header : ImageFont.FreeTypeFont
         Font used for the header.
     profile_picture : Image.Image
@@ -184,8 +201,8 @@ def __draw_header_without_profile_pic(
     int
         Vertical coordinate at which to start drawing the tweet body.
     """
-    x = int(coordinates[0])
-    y = int(coordinates[1])
+    x = coordinates[0]
+    y = coordinates[1]
 
     username = tweet_info["user_name"]
     user_name = wrap(username, 19)
@@ -202,23 +219,26 @@ def __draw_header_without_profile_pic(
 
     # Draw the user tag
     draw_interface.text((x, y), user_tag, font=font_header, fill=text_color)
-    y += int(font_header.size + margin * 1.5)
+
+    # Calculate the vertical coordinate at which to start drawing the\
+    # tweet text
+    return_y = coordinates[1] + header_height + margin
 
     # Return the current vertical coordinate
-    return y
-
+    return return_y
 
 def __get_initial_coordinates(
-    img_size: List[int], dimensions: Dict[str, List[int]]
+    graphic_settings: GraphicSettings, 
+    dimensions: Dict[str, List[int]]
 ) -> Tuple[int]:
     """Calculate the initial X and Y coordinates at which to start drawing.
 
     Parameters
     ----------
-    img_size : List[int]
-        Width and height of the graphic.
+    graphic_settings : GraphicSettings
+        Dictionary with the graphic's settings.
     dimensions : Dict[str, List[int]]
-        Dictinary that contains the size of the header (without profile picture) and the tweet text.
+        Dictionary of the header and tweet text dimensions, respectively.
 
     Returns
     -------
@@ -228,12 +248,21 @@ def __get_initial_coordinates(
     # Get header and tweet text dimensions
     header_width, header_height = dimensions["header"]
     text_width, text_height = dimensions["text"]
+    img_size = graphic_settings["size"]
+    margin = graphic_settings["margin_bottom"]
 
-    # Horizontal coordinate to draw at (centered)
-    x = (img_size[0] - text_width) // 2
-    # Initial vertical coordinate to draw at (centered)
-    content_height = header_height + text_height
+    # Horizontal coordinate to start drawing at (centered)
+    if text_width > header_width:
+        x = (img_size[0] - text_width) // 2
+    else:
+        x = (img_size[0] - header_width) // 2
+
+    # Vertical coordinate to start drawing at (centered)
+    content_height = header_height + text_height + margin
     y = (img_size[1] - content_height) // 2
+
+    x = int(x)
+    y = int(y)
 
     return (x, y)
 
@@ -261,11 +290,9 @@ def create_tweet(
     t_info = validate_tweet_info(tweet_info)
     # Use the graphic settings passed (either custom or default)
     g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
+        tweet_info, graphic_settings, default_settings_format)
 
     # Get the tweet info received
-    user_name = tweet_info["user_name"]
-    user_tag = tweet_info["user_tag"]
     tweet_text = tweet_info["tweet_text"]
     user_pic = tweet_info["user_pic"]
     # Dimensions of the graphic
@@ -287,8 +314,9 @@ def create_tweet(
         # Process the profile picture
         profile_pic_processed = process_pic(graphic_settings, user_pic)
         
-    # Dictionary with dimensions for the header and text
+    # Dictionary with dimensions for the header and text (width, height)
     content_dims = calculate_content_dimensions(tweet_info, g_settings)
+    header_height = content_dims["header"][1]
 
     # Create what will be the final image
     img = Image.new("RGBA", (img_size[0], img_size[1]), color=background_color)
@@ -296,16 +324,16 @@ def create_tweet(
     draw = ImageDraw.Draw(img)
 
     # Calculate the inital drawing coordinates for the header
-    x, y = __get_initial_coordinates(img_size, content_dims)
+    x, y = __get_initial_coordinates(graphic_settings, content_dims)
     
     # Draw the header (and update the vertical coordinate to be where the\
     # tweet text starts)
     if user_pic == "":
         y = __draw_header_without_profile_pic(
-            tweet_info, graphic_settings, img, draw, (x, y), font_header)
+            tweet_info, graphic_settings, img, draw, (x, y), header_height, font_header)
     else:
         y = __draw_header_with_profile_pic(
-            tweet_info, graphic_settings, img, draw, (x, y), font_header, profile_pic_processed)
+            tweet_info, graphic_settings, img, draw, (x, y), header_height, font_header, profile_pic_processed)
 
     # Split the tweet text into lines
     text_wrapped = wrap(tweet_text, chars_limit)
@@ -343,10 +371,9 @@ def gen_tweets_from_file(
     # Load the tweets from a JSON file as a list of tweet_info dictionaries
     json_tweets = get_ready_tweets(file_path)
 
-    # Use the graphic settings passed (either custom or default)
-    g_settings = __choose_graphic_settings(
-        graphic_settings, default_settings_format)
 
     # Create a graphic for each quote
     for tweet in json_tweets:
+        # Use the graphic settings passed (either custom or default)
+        g_settings = __choose_graphic_settings(tweet, graphic_settings, default_settings_format)
         create_tweet(tweet, g_settings, save_dir=save_dir)
