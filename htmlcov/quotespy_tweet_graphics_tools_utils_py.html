@@ -334,8 +334,8 @@
     <p id="t281" class="pln"><span class="n"><a href="#t281">281</a></span><span class="t">    <span class="com"># If there's no profile pic dimensions, set it to be the default\</span>&nbsp;</span><span class="r"></span></p>
     <p id="t282" class="pln"><span class="n"><a href="#t282">282</a></span><span class="t">    <span class="com"># value: one tenth of the graphic's dimensions</span>&nbsp;</span><span class="r"></span></p>
     <p id="t283" class="mis show_mis"><span class="n"><a href="#t283">283</a></span><span class="t">    <span class="key">if</span> <span class="num">0</span> <span class="key">in</span> <span class="nam">profile_pic_dimensions</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t284" class="mis show_mis"><span class="n"><a href="#t284">284</a></span><span class="t">        <span class="nam">width</span> <span class="op">=</span> <span class="nam">graphic_dimensions</span><span class="op">[</span><span class="num">0</span><span class="op">]</span> <span class="op">*</span> <span class="num">0.1</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t285" class="mis show_mis"><span class="n"><a href="#t285">285</a></span><span class="t">        <span class="nam">height</span> <span class="op">=</span> <span class="nam">graphic_dimensions</span><span class="op">[</span><span class="num">1</span><span class="op">]</span> <span class="op">*</span> <span class="num">0.1</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t284" class="mis show_mis"><span class="n"><a href="#t284">284</a></span><span class="t">        <span class="nam">width</span> <span class="op">=</span> <span class="nam">int</span><span class="op">(</span><span class="nam">graphic_dimensions</span><span class="op">[</span><span class="num">0</span><span class="op">]</span> <span class="op">*</span> <span class="num">0.1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t285" class="mis show_mis"><span class="n"><a href="#t285">285</a></span><span class="t">        <span class="nam">height</span> <span class="op">=</span> <span class="nam">int</span><span class="op">(</span><span class="nam">graphic_dimensions</span><span class="op">[</span><span class="num">1</span><span class="op">]</span> <span class="op">*</span> <span class="num">0.1</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t286" class="mis show_mis"><span class="n"><a href="#t286">286</a></span><span class="t">        <span class="nam">new_dimensions</span> <span class="op">=</span> <span class="op">(</span><span class="nam">width</span><span class="op">,</span> <span class="nam">height</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t287" class="pln"><span class="n"><a href="#t287">287</a></span><span class="t">    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t288" class="mis show_mis"><span class="n"><a href="#t288">288</a></span><span class="t">        <span class="nam">new_dimensions</span> <span class="op">=</span> <span class="nam">tuple</span><span class="op">(</span><span class="nam">profile_pic_dimensions</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -469,7 +469,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.1</a>,
-            created at 2020-08-30 22:28
+            created at 2020-08-30 22:58
         </p>
     </div>
 </div>
